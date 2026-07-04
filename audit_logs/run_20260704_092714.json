@@ -1,0 +1,27 @@
+{
+  "run_id": "20260704_092714",
+  "status": "FAILED",
+  "total_duration_seconds": 0.84,
+  "timestamp_completed": "2026-07-04T09:27:15.162737+00:00",
+  "error": "Context extraction failed after 2 attempts",
+  "execution_steps": [
+    {
+      "step": "pipeline_start",
+      "timestamp": "2026-07-04T09:27:14.324802+00:00",
+      "raw_input_preview": "We need a blog post about how multi-agent systems are better than single LLMs. Single LLMs suffer fr..."
+    },
+    {
+      "step": "Extractor",
+      "status": "STARTED",
+      "elapsed_seconds": 0.0,
+      "timestamp": "2026-07-04T09:27:14.325130+00:00"
+    }
+  ],
+  "final_context": {
+    "raw_input": "We need a blog post about how multi-agent systems are better than single LLMs. Single LLMs suffer from context rot after 40k tokens.",
+    "extraction": null,
+    "research_doc_path": null,
+    "long_form_draft": null,
+    "short_form_draft": null
+  }
+}
