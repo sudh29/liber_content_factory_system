@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Quote } from '../../../shared/types';
-import { Calendar, Clock, ToggleLeft, ToggleRight, Play, CheckCircle2, ChevronRight, HelpCircle, BadgeAlert } from 'lucide-react';
+import { ContentItem } from '../../../shared/types';
+import { Calendar, Clock, ToggleLeft, ToggleRight, Play } from 'lucide-react';
 
 interface SchedulerSettingsProps {
-  quotes: Quote[];
+  quotes: ContentItem[]; // Generalized items
   onScheduleQuote: (quoteId: string, time: string) => void;
   onTriggerDailyPost: () => void;
 }
@@ -24,12 +24,10 @@ export const SchedulerSettings: React.FC<SchedulerSettingsProps> = ({
     e.preventDefault();
     if (!selectedQuoteId) return;
 
-    // Calculate a proper future ISO time string based on time selected
     const today = new Date();
     const [hours, minutes] = scheduleTime.split(":");
     today.setHours(parseInt(hours), parseInt(minutes), 0, 0);
     
-    // If it's already past that time today, schedule for tomorrow
     if (today < new Date()) {
       today.setDate(today.getDate() + 1);
     }
@@ -46,23 +44,22 @@ export const SchedulerSettings: React.FC<SchedulerSettingsProps> = ({
             <Calendar className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="font-semibold text-gray-900 dark:text-white text-lg">Scheduled Daily Posting Engine</h3>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Automate or configure daily publication slots. Enforces duplicate quote safeguards.</p>
+            <h3 className="font-semibold text-gray-900 dark:text-white text-lg">Scheduled Publishing Engine</h3>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Automate and queue up daily publication slots for different content types.</p>
           </div>
         </div>
 
-        {/* Toggle simulation active state */}
         <button
           id="toggle-automated-posting-btn"
           onClick={() => setAutoPosting(!autoPosting)}
           className="flex items-center gap-1 cursor-pointer select-none"
         >
           {autoPosting ? (
-            <ToggleRight className="w-9 h-9 text-emerald-600 dark:text-emerald-450" />
+            <ToggleRight className="w-9 h-9 text-emerald-600" />
           ) : (
-            <ToggleLeft className="w-9 h-9 text-gray-400 dark:text-slate-600" />
+            <ToggleLeft className="w-9 h-9 text-gray-400 dark:text-slate-650" />
           )}
-          <span className="text-xs font-semibold text-gray-700 dark:text-slate-350">Auto Daily</span>
+          <span className="text-xs font-semibold text-gray-700 dark:text-slate-350">Auto Publish</span>
         </button>
       </div>
 
@@ -72,11 +69,11 @@ export const SchedulerSettings: React.FC<SchedulerSettingsProps> = ({
         <div className="lg:col-span-5 space-y-4">
           <form id="schedule-queue-form" onSubmit={handleCreateSchedule} className="p-4 bg-slate-50/50 dark:bg-slate-950/40 rounded-xl border border-gray-100 dark:border-slate-800 space-y-3">
             <span className="block text-[10px] font-bold text-gray-400 dark:text-slate-500 uppercase tracking-widest">
-              Schedule Quote Queue Slot
+              Schedule Content Queue Slot
             </span>
 
             <div>
-              <label className="block text-xs font-medium text-gray-700 dark:text-slate-350 mb-1">Select Unpublished Quote</label>
+              <label className="block text-xs font-medium text-gray-700 dark:text-slate-350 mb-1">Select Unpublished Item</label>
               <select
                 id="schedule-quote-selector"
                 value={selectedQuoteId}
@@ -84,10 +81,10 @@ export const SchedulerSettings: React.FC<SchedulerSettingsProps> = ({
                 className="w-full text-xs p-2.5 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white rounded-lg focus:outline-none"
                 required
               >
-                <option value="" className="text-gray-500 dark:text-slate-400">-- Choose Authentic Quote --</option>
+                <option value="" className="text-gray-500 dark:text-slate-400">-- Choose Content --</option>
                 {unpublishedQuotes.map((q) => (
                   <option key={q.id} value={q.id}>
-                    "{q.text.substring(0, 48)}..." (— {q.author})
+                    [{q.type}] {q.title ? `"${q.title}"` : `"${q.text.substring(0, 36)}..."`} (— {q.author})
                   </option>
                 ))}
               </select>
@@ -110,7 +107,7 @@ export const SchedulerSettings: React.FC<SchedulerSettingsProps> = ({
                   id="add-to-schedule-btn"
                   type="submit"
                   disabled={!selectedQuoteId}
-                  className="w-full py-2 bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-150 dark:disabled:bg-slate-800 disabled:text-gray-400 dark:disabled:text-slate-650 text-white font-semibold text-xs rounded-lg transition-colors cursor-pointer select-none"
+                  className="w-full py-2 bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-150 dark:disabled:bg-slate-805 disabled:text-gray-400 text-white font-semibold text-xs rounded-lg transition-colors cursor-pointer select-none"
                 >
                   Confirm Slot
                 </button>
@@ -119,13 +116,13 @@ export const SchedulerSettings: React.FC<SchedulerSettingsProps> = ({
           </form>
 
           {/* Instant Publish Trigger */}
-          <div className="p-4 bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-100/50 dark:border-emerald-900/40 rounded-xl space-y-2 transition-colors">
+          <div className="p-4 bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-100/50 dark:border-emerald-900/40 rounded-xl space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-emerald-950 dark:text-emerald-250 uppercase tracking-wide">Instant Publisher Sim</span>
               <span className="bg-emerald-150 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 text-[9px] font-bold px-1.5 py-0.5 rounded-full uppercase">Trigger Event</span>
             </div>
-            <p className="text-xs text-emerald-800 dark:text-emerald-350 leading-normal">
-              Trigger instant publication of the next ready quote in line to verify formatting pipelines and webhook payloads right now!
+            <p className="text-xs text-emerald-800 dark:text-emerald-355 leading-normal">
+              Trigger instant publication of the next ready content item in the queue to verify REST and webhook integrations immediately.
             </p>
             <button
               id="instant-scheduled-daily-trigger-btn"
@@ -134,7 +131,7 @@ export const SchedulerSettings: React.FC<SchedulerSettingsProps> = ({
               className="w-full py-2 bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-200 dark:disabled:bg-slate-800 disabled:text-white dark:disabled:text-slate-600 text-white font-semibold text-xs rounded-lg flex items-center justify-center gap-1.5 transition-all select-none cursor-pointer shadow-xs"
             >
               <Play className="w-3.5 h-3.5 fill-current" />
-              Trigger Next In-Line Publication
+              Trigger Next In-Line
             </button>
           </div>
         </div>
@@ -142,14 +139,14 @@ export const SchedulerSettings: React.FC<SchedulerSettingsProps> = ({
         {/* Right Side: Active Scheduled Queue */}
         <div className="lg:col-span-7 space-y-3">
           <div className="flex items-center justify-between text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">
-            <span>Upcoming Queue Reserves ({scheduledQuotes.length})</span>
+            <span>Upcoming Queue ({scheduledQuotes.length})</span>
             <span className="text-[10px] text-indigo-600 dark:text-indigo-400 font-semibold lowercase">FIFO execution order</span>
           </div>
 
           {scheduledQuotes.length === 0 ? (
             <div className="text-center py-10 border border-dashed border-gray-150 dark:border-slate-800 rounded-xl bg-slate-50/10 dark:bg-slate-950/20">
               <Clock className="w-8 h-8 text-gray-300 dark:text-slate-650 mx-auto mb-1" />
-              <p className="text-xs text-gray-400 dark:text-slate-500">Queue is empty. Schedule custom reserve times or use auto mode.</p>
+              <p className="text-xs text-gray-400 dark:text-slate-500">No scheduled content in queue.</p>
             </div>
           ) : (
             <div className="space-y-2 max-h-[220px] overflow-y-auto">
@@ -162,8 +159,10 @@ export const SchedulerSettings: React.FC<SchedulerSettingsProps> = ({
                         <Clock className="w-4 h-4" />
                       </div>
                       <div className="min-w-0">
-                        <p className="font-semibold text-gray-900 dark:text-white truncate">"{q.text}"</p>
-                        <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5">Attribution figure: {q.author}</p>
+                        <p className="font-semibold text-gray-900 dark:text-white truncate">
+                          [{q.type}] {q.title ? `"${q.title}"` : `"${q.text}"`}
+                        </p>
+                        <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5">Author: {q.author}</p>
                       </div>
                     </div>
 

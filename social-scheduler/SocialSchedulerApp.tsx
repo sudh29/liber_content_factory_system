@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Quote } from '../../shared/types';
-import { useThemeMode } from '../../shared/hooks/useThemeMode';
+import { ContentItem } from '../shared/types';
+import { useThemeMode } from '../shared/hooks/useThemeMode';
 import { QuoteManager } from './components/QuoteManager';
 import { SocialPreview } from './components/SocialPreview';
 import { IntegrationSettings } from './components/IntegrationSettings';
@@ -16,7 +16,7 @@ interface SocialSchedulerAppProps {
 }
 
 export function SocialSchedulerApp({ onNavigateToDailyQuotes }: SocialSchedulerAppProps) {
-  const [selectedQuote, setSelectedQuote] = useState<Quote | null>(null);
+  const [selectedQuote, setSelectedQuote] = useState<ContentItem | null>(null);
   const [activeTab, setActiveTab] = useState<'dashboard' | 'library' | 'preview' | 'schedule' | 'integrations' | 'logs'>('dashboard');
   const { isDarkMode, toggleDarkMode } = useThemeMode();
 
@@ -46,14 +46,14 @@ export function SocialSchedulerApp({ onNavigateToDailyQuotes }: SocialSchedulerA
     }
   });
 
-  const handleAddQuote = (newQuoteData: Omit<Quote, 'id' | 'status'>): boolean => {
+  const handleAddQuote = (newQuoteData: Omit<ContentItem, 'id' | 'status'>): boolean => {
     const { success, isDuplicate, quote } = addQuote(newQuoteData);
     if (isDuplicate) {
-      addLog('ERROR', `Deduplication Check Failed: Attempted to add duplicate quote from ${newQuoteData.author} which was blocked.`);
+      addLog('ERROR', `Deduplication Failed: Attempted to add duplicate content from ${newQuoteData.author} which was blocked.`);
       return false;
     }
     if (success && quote) {
-      addLog('INFO', `Quote Repository expanded: Added authentic verified quote attributed to ${newQuoteData.author}.`);
+      addLog('INFO', `Content expanded: Added new ${newQuoteData.type} record attributed to ${newQuoteData.author}.`);
       return true;
     }
     return false;
@@ -64,10 +64,10 @@ export function SocialSchedulerApp({ onNavigateToDailyQuotes }: SocialSchedulerA
     if (selectedQuote?.id === id) {
       setSelectedQuote(null);
     }
-    addLog('INFO', `Quote removed from database index: ${deletedQuote?.author || 'item'}`);
+    addLog('INFO', `Content removed from database index: ${deletedQuote?.author || 'item'}`);
   };
 
-  const handleImportCSV = (importedQuotes: Omit<Quote, 'id' | 'status'>[]) => {
+  const handleImportCSV = (importedQuotes: Omit<ContentItem, 'id' | 'status'>[]) => {
     let added = 0;
     let skippedIdsCount = 0;
     
@@ -81,7 +81,7 @@ export function SocialSchedulerApp({ onNavigateToDailyQuotes }: SocialSchedulerA
     });
 
     if (added > 0) {
-      addLog('SUCCESS', `Bulk Importer processed: Chronicled ${added} new unique quotes. Silently filtered out ${skippedIdsCount} duplicate records.`);
+      addLog('SUCCESS', `Bulk Importer processed: Chronicled ${added} new unique items. Filtered out ${skippedIdsCount} duplicate records.`);
     } else {
       addLog('INFO', `Bulk Importer: Checked duplicate filters. All loaded records (${skippedIdsCount}) already exist; skipped redundant additions.`);
     }
@@ -91,7 +91,7 @@ export function SocialSchedulerApp({ onNavigateToDailyQuotes }: SocialSchedulerA
 
   const handleScheduleQuote = (quoteId: string, timeStr: string) => {
     scheduleQuote(quoteId, timeStr);
-    addLog('INFO', `Quote scheduled for auto release. Reservation time: ${new Date(timeStr).toLocaleString()}`, quoteId);
+    addLog('INFO', `Content scheduled for release. Reservation time: ${new Date(timeStr).toLocaleString()}`, quoteId);
   };
 
   return (
@@ -106,28 +106,27 @@ export function SocialSchedulerApp({ onNavigateToDailyQuotes }: SocialSchedulerA
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="font-bold text-brand-pistachio tracking-tight text-lg">Daily Quotes Publisher</span>
+                    <span className="font-bold text-brand-pistachio tracking-tight text-lg font-sans">Universal AI Content Agent Hub</span>
                     <span className="text-[9px] font-bold tracking-widest text-brand-pistachio bg-brand-clay/40 border border-brand-clay/35 px-2 py-0.5 rounded-full uppercase">Deduplication Active</span>
                   </div>
-                  <p className="text-xs text-brand-sage/90 dark:text-brand-sage/80">Manage, preview & publish authentic historical quotes with zero content duplicates</p>
+                  <p className="text-xs text-brand-sage/90 dark:text-brand-sage/80">Manage, preview & publish multiple content types (Blogs, Social Threads, Quotes) with zero repetition</p>
                 </div>
               </div>
 
               <div className="flex flex-wrap items-center justify-between md:justify-end gap-3 self-stretch md:self-auto select-none">
-                {/* Back to public Daily Quotes app */}
                 <button
                   id="header-back-home"
                   onClick={onNavigateToDailyQuotes}
                   className="px-3.5 py-1.5 bg-brand-pistachio/15 hover:bg-brand-pistachio/25 rounded-xl text-xs font-semibold text-brand-pistachio transition-all duration-150 flex items-center gap-1.5 border border-brand-sage/20 cursor-pointer"
                 >
                   <Sparkles className="w-3.5 h-3.5 text-brand-clay animate-pulse" />
-                  <span>View Daily Quotes</span>
+                  <span>View Content Engine</span>
                 </button>
 
                 {/* Quick-stats strip in header */}
                 <div className="flex items-center gap-2.5 text-xs">
                   <div className="bg-brand-green/45 px-3 py-1.5 rounded-xl border border-brand-sage/20 font-mono text-[11px] text-[#f4f6f0] dark:bg-brand-pine-dark dark:border-brand-green/45">
-                    Queue Reserve: <span className="text-brand-clay font-bold">{quotes.filter((q) => q.status === 'Unpublished').length}</span>
+                    Queue: <span className="text-brand-clay font-bold">{quotes.filter((q) => q.status === 'Unpublished').length}</span>
                   </div>
                   <div className="bg-brand-green/45 px-3 py-1.5 rounded-xl border border-brand-sage/20 font-mono text-[11px] text-[#f4f6f0] dark:bg-brand-pine-dark dark:border-brand-green/45">
                     Published: <span className="text-brand-sage font-bold">{quotes.filter((q) => q.status === 'Published').length}</span>
@@ -183,7 +182,7 @@ export function SocialSchedulerApp({ onNavigateToDailyQuotes }: SocialSchedulerA
                 }`}
               >
                 <BookOpen className="w-4 h-4" />
-                <span>Quote Repository</span>
+                <span>Content Repository</span>
               </button>
 
               <button
@@ -194,18 +193,18 @@ export function SocialSchedulerApp({ onNavigateToDailyQuotes }: SocialSchedulerA
                 }`}
               >
                 <Laptop className="w-4 h-4" />
-                <span>Social Previewer ({selectedQuote ? "1 Active" : "0 selected"})</span>
+                <span>Universal Previewer ({selectedQuote ? "1 Active" : "0 selected"})</span>
               </button>
 
               <button
                 id="nav-tab-schedule"
                 onClick={() => setActiveTab('schedule')}
                 className={`py-2.5 px-4 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer ${
-                  activeTab === 'schedule' ? 'bg-brand-green text-brand-pistachio shadow-sm dark:bg-brand-sage dark:text-brand-pine-dark' : 'text-brand-earth/80 hover:text-brand-green hover:bg-brand-sage/10 dark:text-brand-sage/80 dark:hover:text-brand-pistachio dark:hover:bg-brand-green/30'
+                  activeTab === 'schedule' ? 'bg-brand-green text-brand-pistachio shadow-sm dark:bg-brand-sage dark:text-brand-pine-dark' : 'text-brand-earth/80 hover:text-brand-green hover:bg-brand-sage/10 dark:text-brand-sage/85 dark:hover:text-brand-pistachio dark:hover:bg-brand-green/30'
                 }`}
               >
                 <Calendar className="w-4 h-4" />
-                <span>Daily Posting Engine</span>
+                <span>Publish Scheduling</span>
               </button>
 
               <button
@@ -260,7 +259,7 @@ export function SocialSchedulerApp({ onNavigateToDailyQuotes }: SocialSchedulerA
                           onClick={() => setActiveTab('library')}
                           className="px-3 py-1.5 bg-brand-green/10 dark:bg-brand-green/45 text-brand-green dark:text-brand-sage rounded-lg text-xs font-medium hover:bg-brand-green/20 dark:hover:bg-brand-green/60 cursor-pointer transition-colors"
                         >
-                          View Quote Archive
+                          View Content Archive
                         </button>
                       </div>
                     </div>
@@ -318,7 +317,7 @@ export function SocialSchedulerApp({ onNavigateToDailyQuotes }: SocialSchedulerA
                     quote={selectedQuote}
                     onEditQuoteText={(id, txt) => {
                       updateQuoteText(id, txt);
-                      addLog('INFO', "Quote text updated in-memory via preview designer.", id);
+                      addLog('INFO', "Content text updated in-memory via preview designer.", id);
                     }}
                   />
                 </div>
