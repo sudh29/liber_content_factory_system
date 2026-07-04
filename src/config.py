@@ -35,6 +35,11 @@ class PipelineConfig:
     # Maximum revision attempts in the QA validation loop
     max_revisions: int = 3
 
+    # API Keys (optional depending on plugins used)
+    openai_api_key: str = ""
+    twitter_api_key: str = ""
+    linkedin_api_key: str = ""
+
     def __post_init__(self):
         """Ensure output directories exist."""
         self.output_dir.mkdir(parents=True, exist_ok=True)
@@ -60,10 +65,17 @@ def load_config() -> PipelineConfig:
     output_dir = Path(os.environ.get("OUTPUT_DIR", str(PROJECT_ROOT / "output")))
     audit_log_dir = Path(os.environ.get("AUDIT_LOG_DIR", str(PROJECT_ROOT / "audit_logs")))
 
+    openai_key = os.environ.get("OPENAI_API_KEY", "")
+    twitter_key = os.environ.get("TWITTER_API_KEY", "")
+    linkedin_key = os.environ.get("LINKEDIN_API_KEY", "")
+
     config = PipelineConfig(
         model=model,
         output_dir=output_dir,
         audit_log_dir=audit_log_dir,
+        openai_api_key=openai_key,
+        twitter_api_key=twitter_key,
+        linkedin_api_key=linkedin_key,
     )
 
     logger.info(f"Configuration loaded: model={config.model}, output_dir={config.output_dir}")
