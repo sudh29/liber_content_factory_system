@@ -13,145 +13,221 @@ Requires-Dist: pytest-asyncio>=0.23.0; extra == "dev"
 Requires-Dist: ruff>=0.4.0; extra == "dev"
 Requires-Dist: mypy>=1.10.0; extra == "dev"
 
-# Liber Content Factory System
+# AI Content Generation Agents
 
-The Content Factory System is an enterprise-grade multi-agent pipeline and scheduling dashboard designed to solve the problem of scaling authentic, high-quality content creation without falling victim to AI hallucination, context rot, or plagiarism.
+## Project Overview
 
-## The Problem
-Modern businesses and content creators struggle to maintain a consistent output of high-quality social media and long-form content. Relying on single, monolithic LLM prompts often leads to "context rot," hallucinated facts, and repetitive, generic writing. Furthermore, managing the generated content requires fragmented tools for editing, deduplicating, and publishing.
+I created this repository to build a **generic AI-powered Content Generation Agent Framework** that can automate the complete content creation and publishing workflow across multiple social media platforms.
 
-## The Solution
-The Liber Content Factory solves this by decoupling the creative process into a **Multi-Agent System**. Instead of one massive prompt, specialized AI agents (Extractor, Researcher, Drafter, QA Validator) handle distinct phases of content generation. The pipeline enforces strict security guardrails, grounds generation in verified research, and utilizes a deterministic QA loop. The output is then managed by a custom React dashboard that handles deduplication, simulated API publishing, and scheduling.
+Instead of building an agent for only one use case, the goal is to create a reusable, modular, and extensible multi-agent system that can generate different types of content, including:
 
-## Architecture Overview
+* Daily motivational quotes
+* Instagram posts
+* Twitter/X posts
+* LinkedIn posts
+* YouTube Shorts scripts
+* Blog articles
+* WhatsApp and Telegram broadcasts
+* Newsletters
+* Product announcements
+* Educational content
+* Marketing campaigns
 
-```mermaid
-graph TD
-    User([User Input]) --> Guard[Input Guardrails]
-    Guard --> Extractor[Extractor Agent]
-    Extractor --> |Knowledge Gaps| Researcher[Researcher Agent]
-    Extractor --> |Core Arguments| Drafter[Drafters Fan-out]
-    Researcher --> |Fact-checked Context| Drafter
-    
-    subgraph Fan-Out
-        Drafter --> LongForm[Long-Form Drafter]
-        Drafter --> ShortForm[Short-Form Drafter]
-        ShortForm -.-> |Executes| Analyzer[text_analyzer.py Skill]
-    end
-    
-    ShortForm --> QA[QA Validator Agent]
-    QA -->|Rejects| ShortForm
-    QA -->|Approves| OutGuard[Output Guardrails]
-    LongForm --> OutGuard
-    
-    OutGuard --> Dashboard[React/Vite Dashboard]
-    Dashboard --> Publish[Simulated Publishing/Webhooks]
-```
+The **Daily Quotes Generator** serves as the first end-to-end demonstration of the framework.
 
-The system consists of two primary components:
+---
 
-1. **Python Multi-Agent Pipeline (`src/`)**: A backend pipeline that orchestrates multiple LLM calls.
-2. **React/TypeScript Social Scheduler (`social-scheduler/`)**: A frontend dashboard for previewing, scheduling, and publishing content.
+# Demonstration Use Case: Daily Quote Generator
 
-### Multi-Agent Pipeline Stages
+The Daily Quote Generator is not just a quote generator—it is an autonomous AI workflow that performs multiple intelligent tasks before publishing content.
 
-The pipeline follows a strict Orchestrator-Worker paradigm to avoid context rot and ensure high-quality output:
+### Step 1 — Content Discovery
 
-1. **Extractor Agent**: Converts unstructured raw input into a structured `ExtractionSchema` containing core arguments, evidence, and knowledge gaps.
-2. **Researcher Agent**: If knowledge gaps exist, this agent uses Gemini's Google Search capabilities to find facts and generates a Markdown reference document.
-3. **Drafters (Fan-out)**:
-   - **Long-Form Drafter**: Generates a comprehensive blog post using local context and research.
-   - **Short-Form Drafter**: Generates a social media hook (e.g., for LinkedIn) utilizing the `linkedin-hook-generator` skill.
-4. **QA Validator Agent**: Acts as an LLM-as-a-Judge to adversarially evaluate the drafted content against rubrics. If it fails, it provides feedback and triggers a revision loop (up to a configured maximum number of attempts).
+The agent collects quotes from trusted sources and famous personalities such as:
 
-### Security & Observability
+* Scientists
+* Entrepreneurs
+* Authors
+* Philosophers
+* Leaders
+* Athletes
+* Historical figures
 
-- **Guardrails**: Built-in security policies screen inputs for prompt injections and secret leaks, and screen outputs for leaked system prompts and credentials.
-- **Audit Logging**: The `PipelineObserver` records granular, timestamped JSON logs of every pipeline step, execution time, and artifact state.
+---
 
-## Getting Started
+### Step 2 — Duplicate Detection
 
-### Prerequisites
+The system maintains a history of all previously published quotes.
 
-- Python 3.10+
-- A Google Gemini API Key
+Before selecting a quote, it automatically checks:
 
-### Installation
+* Has this quote already been published?
+* Has a very similar quote been used recently?
+* Is this author overrepresented?
 
-The project uses a standard `pyproject.toml`.
+This ensures content remains fresh and avoids repetition.
 
-```bash
-# Clone the repository
-git clone <repository_url>
-cd liber_content_factory_system
+---
 
-# Create a virtual environment
-python -m venv .venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+### Step 3 — Context-Aware Selection
 
-# Install dependencies (including optional dev dependencies for testing)
-pip install -e ".[dev]"
-```
+Rather than choosing a random quote, the agent evaluates multiple candidate quotes using AI.
 
-### Configuration
+Selection criteria may include:
 
-Create a `.env` file in the project root:
+* Relevance to today's date
+* Historical events occurring on this day
+* International observances
+* Festivals
+* Current trends
+* Seasonal context
+* Audience engagement potential
+* Motivation level
+* Business relevance
+* Educational value
 
-```bash
-cp .env.example .env
-```
+The agent then ranks the candidates and selects the most appropriate quote for the day.
 
-Edit the `.env` file and add your Gemini API key:
+---
 
-```env
-GEMINI_API_KEY=your_gemini_api_key_here
-```
+### Step 4 — AI Enhancement
 
-### Usage
+Once a quote is selected, additional AI agents enrich the content by generating:
 
-Run the pipeline from the command line using the installed entry point or directly via `main.py`:
+* A meaningful explanation
+* Practical life lessons
+* Historical background of the author
+* Modern-day relevance
+* Suggested hashtags
+* SEO-friendly captions
+* Platform-specific formatting
+* Call-to-action text
 
-```bash
-# Using the installed script
-content-factory --input "We need a blog post about how multi-agent systems are better than single LLMs."
+---
 
-# Using main.py directly
-python main.py --input "Explain the benefits of the MCP protocol."
+### Step 5 — Image Generation
 
-# Load input from a file
-python main.py --file prompt.txt
+The framework can optionally generate:
 
-# Enable verbose logging
-python main.py --verbose --input "..."
-```
+* Quote cards
+* AI-generated illustrations
+* Branded backgrounds
+* Multiple aspect ratios for different platforms
 
-## Testing
+---
 
-The project includes a comprehensive test suite covering the agents, orchestrator, and security policies.
+### Step 6 — Multi-Platform Publishing
 
-```bash
-# Run all tests
-pytest tests/ -v
-```
+After approval (or automatically), the publishing agent distributes the content across multiple platforms, including:
 
-## Project Structure
+* Instagram
+* Twitter (X)
+* LinkedIn
+* Facebook
+* Threads
+* Telegram
+* WhatsApp Channels
+* YouTube Community Posts
+* Pinterest
+* Discord
+
+Each platform receives content optimized for its specific audience and formatting requirements.
+
+---
+
+# Framework Vision
+
+Although the Daily Quote Generator is the first implementation, the repository is designed as a **general-purpose AI Content Agent Framework**.
+
+By replacing the content generation module, the same architecture can power:
+
+* Educational content generators
+* AI blogging agents
+* News summarization agents
+* Marketing automation agents
+* Product launch campaigns
+* Social media management systems
+* YouTube content pipelines
+* Newsletter automation
+* Personal branding assistants
+
+The objective is to create a plug-and-play ecosystem where new content workflows can be added with minimal effort.
+
+---
+
+# Multi-Agent Architecture
+
+The framework is built around specialized AI agents, each responsible for a specific task.
 
 ```text
-├── main.py                 # CLI entry point
-├── pyproject.toml          # Project configuration and dependencies
-├── src/                    # Python package source
-│   ├── config.py           # Centralized configuration management
-│   ├── orchestrator.py     # ContentPipeline class and lifecycle management
-│   ├── hooks.py            # Audit logging and observability observer
-│   ├── security_policies.py# Input/output security guardrails
-│   └── agents/             # Specialized AI agents
-│       ├── extractor.py    # Context extraction
-│       ├── researcher.py   # Web research
-│       ├── drafters.py     # Content generation
-│       └── validator.py    # QA and evaluation
-├── tests/                  # Pytest test suite
-├── .agents/                # Agent skills definitions
-│   └── skills/
-├── social-scheduler/       # React frontend application
-└── shared/                 # Shared frontend code (types, utils, data)
+User Request
+      │
+      ▼
+Planner Agent
+      │
+      ▼
+Research Agent
+      │
+      ▼
+Content Generation Agent
+      │
+      ▼
+Duplicate Detection Agent
+      │
+      ▼
+Context Ranking Agent
+      │
+      ▼
+Fact Verification Agent
+      │
+      ▼
+Image Generation Agent
+      │
+      ▼
+Platform Formatting Agent
+      │
+      ▼
+Publishing Agent
+      │
+      ▼
+Analytics & Feedback Agent
 ```
+
+This modular architecture makes it easy to swap, extend, or improve individual agents without affecting the rest of the workflow.
+
+---
+
+# Technologies and AI Concepts
+
+This project aims to demonstrate modern AI agent development using concepts from Google's **AI Agents: Intensive Vibe Coding** course, including:
+
+* Multi-Agent Systems
+* Agent Development Kit (ADK)
+* Model Context Protocol (MCP)
+* Tool Calling
+* Planning and Orchestration
+* Long-term Memory
+* Retrieval-Augmented Generation (RAG)
+* AI-assisted Decision Making
+* Secure Agent Design
+* Deployable Agent Architecture
+
+---
+
+# Why This Project?
+
+Content creators, educators, businesses, and individuals spend significant time creating, scheduling, and publishing content across multiple platforms.
+
+This project demonstrates how AI agents can automate the entire workflow—from discovering high-quality content and reasoning about what should be published, to generating polished assets and distributing them automatically.
+
+The result is a reusable AI agent framework that reduces manual effort while maintaining high-quality, context-aware, and engaging content.
+
+---
+
+# Capstone Project Goal
+
+This repository is my submission for the **Google × Kaggle AI Agents: Intensive Vibe Coding Capstone Project**.
+
+Rather than building a single-purpose AI application, the goal is to showcase a scalable, production-ready agent architecture capable of solving real-world content automation challenges. The Daily Quote Generator serves as the first proof of concept, demonstrating how multiple AI agents can collaborate to research, reason, generate, validate, optimize, and publish content autonomously.
+
+The long-term vision is to evolve this repository into a comprehensive AI Content Automation Platform capable of supporting a wide range of content generation and publishing workflows for creators, businesses, educators, and organizations.
