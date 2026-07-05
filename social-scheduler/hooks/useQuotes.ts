@@ -58,7 +58,7 @@ export function useQuotes() {
     // In practice, useQuotes only calls setQuotes internally when initializing or resetting, so local cache is correct.
   };
 
-  const addQuote = (newQuoteData: Omit<Quote, 'id' | 'status'>): { success: boolean; isDuplicate: boolean; quote?: Quote } => {
+  const addQuote = async (newQuoteData: Omit<Quote, 'id' | 'status'>): Promise<{ success: boolean; isDuplicate: boolean; quote?: Quote }> => {
     if (isDuplicateQuote(quotes, newQuoteData.text)) {
       return { success: false, isDuplicate: true };
     }
@@ -68,18 +68,32 @@ export function useQuotes() {
       status: 'Unpublished',
     };
     
-    // Update local state & cache
+    // Persist to backend first so the quote exists server-side before publish
+    try {
+      const res = await fetch('/api/quotes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newQuote)
+      });
+      if (res.ok) {
+        const saved = await res.json();
+        // Use server-confirmed quote (may have server-assigned ID)
+        if (saved.quote) {
+          const confirmedQuote: Quote = saved.quote;
+          const updated = [confirmedQuote, ...quotes];
+          setQuotesState(updated);
+          localStorage.setItem('quotes_repository', JSON.stringify(updated));
+          return { success: true, isDuplicate: false, quote: confirmedQuote };
+        }
+      }
+    } catch (err) {
+      console.warn("Backend save failed, falling back to local-only:", err);
+    }
+
+    // Fallback: update local state only (backend offline)
     const updated = [newQuote, ...quotes];
     setQuotesState(updated);
     localStorage.setItem('quotes_repository', JSON.stringify(updated));
-
-    // Persist to backend server
-    fetch('/api/quotes', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(newQuote)
-    }).catch(err => console.error("Failed to add quote to backend:", err));
-
     return { success: true, isDuplicate: false, quote: newQuote };
   };
 

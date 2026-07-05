@@ -4,7 +4,7 @@ import { Sparkles, Terminal, ShieldCheck, AlertTriangle, Eye, ArrowRight, Loader
 import { SocialPreview } from './SocialPreview';
 
 interface ContentGenerationProps {
-  onAddQuote: (newQuote: Omit<ContentItem, 'id' | 'status'>) => boolean;
+  onAddQuote: (newQuote: Omit<ContentItem, 'id' | 'status'>) => boolean | Promise<boolean>;
   onNavigateToTab: (tab: 'dashboard' | 'library' | 'preview' | 'schedule') => void;
   setSelectedQuote: (quote: ContentItem | null) => void;
 }

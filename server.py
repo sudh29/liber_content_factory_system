@@ -1,7 +1,10 @@
 import os
 import sys
 import json
+import time
+from datetime import datetime, timezone
 import urllib.request
+import urllib.error
 import asyncio
 import logging
 from http.server import HTTPServer, BaseHTTPRequestHandler
@@ -296,7 +299,7 @@ async def run_adk_pipeline(strategy_name: str, prompt: str):
     from app.agent import app
 
     runner = InMemoryRunner(agent=app.root_agent, app_name="app")
-    session_id = f"session_{int(asyncio.get_event_loop().time() * 1000)}"
+    session_id = f"session_{int(time.time() * 1000)}"
     await runner.session_service.create_session(
         app_name="app",
         user_id="user",
@@ -436,7 +439,7 @@ class WebServerHandler(BaseHTTPRequestHandler):
                         break
             else:
                 # Create new
-                quote_data["id"] = f"q_{int(asyncio.get_event_loop().time() * 1000)}"
+                quote_data["id"] = f"q_{int(time.time() * 1000)}"
                 if "status" not in quote_data:
                     quote_data["status"] = "Unpublished"
                 quotes.insert(0, quote_data)
@@ -547,8 +550,8 @@ class WebServerHandler(BaseHTTPRequestHandler):
             # Check for simulated failures
             if creds.get("mockSettings", {}).get("simulateFailures", False):
                 log_fail = {
-                    "id": f"log_fail_{int(asyncio.get_event_loop().time() * 1000)}",
-                    "timestamp": "2026-07-04T22:20:00.000Z",
+                    "id": f"log_fail_{int(time.time() * 1000)}",
+                    "timestamp": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
                     "type": "ERROR",
                     "message": f"Simulated Publishing Failure: Simultaneously dispatching to {', '.join(platforms)} failed. Re-queued.",
                     "quoteId": quote_id
@@ -560,8 +563,8 @@ class WebServerHandler(BaseHTTPRequestHandler):
 
             # Append publication start log
             log_start = {
-                "id": f"log_start_{int(asyncio.get_event_loop().time() * 1000)}",
-                "timestamp": "2026-07-04T22:20:00.000Z",
+                "id": f"log_start_{int(time.time() * 1000)}",
+                "timestamp": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
                 "type": "INFO",
                 "message": f"Starting simultaneous publication cycle for platforms: {', '.join(platforms)}...",
                 "quoteId": quote_id,
@@ -571,29 +574,70 @@ class WebServerHandler(BaseHTTPRequestHandler):
 
             # Perform live broadcasts
             # 1. Telegram
-            if "telegram" in platforms and creds.get("telegramBotToken") and creds.get("telegramChatId"):
-                try:
-                    url = f"https://api.telegram.org/bot{creds['telegramBotToken']}/sendMessage"
-                    payload = json.dumps({
-                        "chat_id": creds['telegramChatId'],
-                        "text": f"\"{quote['text']}\"\n\n— {quote['author']}\n\n#dailyquote #philosophy"
-                    }).encode('utf-8')
-                    req_tel = urllib.request.Request(url, data=payload, headers={'Content-Type': 'application/json'}, method='POST')
-                    with urllib.request.urlopen(req_tel) as response:
-                        pass
+            if "telegram" in platforms:
+                bot_token = creds.get("telegramBotToken", "").strip()
+                chat_id = creds.get("telegramChatId", "").strip()
+                if bot_token and chat_id:
+                    try:
+                        url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
+                        message_text = f"\u201c{quote['text']}\u201d\n\n\u2014 {quote['author']}\n\n#dailyquote #philosophy"
+                        payload = json.dumps({
+                            "chat_id": chat_id,
+                            "text": message_text,
+                            "parse_mode": "HTML"
+                        }).encode('utf-8')
+                        req_tel = urllib.request.Request(
+                            url, data=payload,
+                            headers={'Content-Type': 'application/json'},
+                            method='POST'
+                        )
+                        with urllib.request.urlopen(req_tel) as response:
+                            tel_response = json.loads(response.read().decode())
+                        if tel_response.get("ok"):
+                            logs.insert(0, {
+                                "id": f"log_tel_{int(time.time() * 1000)}",
+                                "timestamp": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+                                "type": "SUCCESS",
+                                "message": f"Telegram: Message delivered to {chat_id}.",
+                                "quoteId": quote_id
+                            })
+                        else:
+                            err_desc = tel_response.get("description", "Unknown error from Telegram API")
+                            logs.insert(0, {
+                                "id": f"log_tel_err_{int(time.time() * 1000)}",
+                                "timestamp": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+                                "type": "ERROR",
+                                "message": f"Telegram API Error: {err_desc}",
+                                "quoteId": quote_id
+                            })
+                    except urllib.error.HTTPError as tel_err:
+                        err_body = tel_err.read().decode()
+                        try:
+                            err_json = json.loads(err_body)
+                            err_desc = err_json.get("description", err_body)
+                        except Exception:
+                            err_desc = err_body
+                        logs.insert(0, {
+                            "id": f"log_tel_err_{int(time.time() * 1000)}",
+                            "timestamp": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+                            "type": "ERROR",
+                            "message": f"Telegram HTTP {tel_err.code}: {err_desc}",
+                            "quoteId": quote_id
+                        })
+                    except Exception as tel_err:
+                        logs.insert(0, {
+                            "id": f"log_tel_err_{int(time.time() * 1000)}",
+                            "timestamp": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+                            "type": "ERROR",
+                            "message": f"Telegram Error: {tel_err}",
+                            "quoteId": quote_id
+                        })
+                else:
                     logs.insert(0, {
-                        "id": f"log_tel_{int(asyncio.get_event_loop().time() * 1000)}",
-                        "timestamp": "2026-07-04T22:20:01.000Z",
-                        "type": "SUCCESS",
-                        "message": f"Telegram Bot API: Successfully transmitted quote live to channel: {creds['telegramChatId']}",
-                        "quoteId": quote_id
-                    })
-                except Exception as tel_err:
-                    logs.insert(0, {
-                        "id": f"log_tel_err_{int(asyncio.get_event_loop().time() * 1000)}",
-                        "timestamp": "2026-07-04T22:20:01.000Z",
+                        "id": f"log_tel_skip_{int(time.time() * 1000)}",
+                        "timestamp": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
                         "type": "ERROR",
-                        "message": f"Telegram Bot API Error: {tel_err}",
+                        "message": "Telegram skipped: TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID must both be set in .env",
                         "quoteId": quote_id
                     })
 
@@ -613,16 +657,16 @@ class WebServerHandler(BaseHTTPRequestHandler):
                     with urllib.request.urlopen(req_web) as response:
                         pass
                     logs.insert(0, {
-                        "id": f"log_web_{int(asyncio.get_event_loop().time() * 1000)}",
-                        "timestamp": "2026-07-04T22:20:02.000Z",
+                        "id": f"log_web_{int(time.time() * 1000)}",
+                        "timestamp": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
                         "type": "SUCCESS",
                         "message": f"Generic Webhook Dispatched: POST success on target address {url}",
                         "quoteId": quote_id
                     })
                 except Exception as web_err:
                     logs.insert(0, {
-                        "id": f"log_web_err_{int(asyncio.get_event_loop().time() * 1000)}",
-                        "timestamp": "2026-07-04T22:20:02.000Z",
+                        "id": f"log_web_err_{int(time.time() * 1000)}",
+                        "timestamp": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
                         "type": "ERROR",
                         "message": f"Generic Webhook API Error: {web_err}",
                         "quoteId": quote_id
@@ -639,16 +683,16 @@ class WebServerHandler(BaseHTTPRequestHandler):
                     with urllib.request.urlopen(req_slack) as response:
                         pass
                     logs.insert(0, {
-                        "id": f"log_slack_{int(asyncio.get_event_loop().time() * 1000)}",
-                        "timestamp": "2026-07-04T22:20:03.000Z",
+                        "id": f"log_slack_{int(time.time() * 1000)}",
+                        "timestamp": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
                         "type": "SUCCESS",
                         "message": f"Slack Integration: Transmitted notification payload successfully to webhook channel.",
                         "quoteId": quote_id
                     })
                 except Exception as slack_err:
                     logs.insert(0, {
-                        "id": f"log_slack_err_{int(asyncio.get_event_loop().time() * 1000)}",
-                        "timestamp": "2026-07-04T22:20:03.000Z",
+                        "id": f"log_slack_err_{int(time.time() * 1000)}",
+                        "timestamp": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
                         "type": "ERROR",
                         "message": f"Slack API Error: {slack_err}",
                         "quoteId": quote_id
@@ -656,7 +700,7 @@ class WebServerHandler(BaseHTTPRequestHandler):
 
             # Update quote status
             quote["status"] = "Published"
-            quote["publishedTime"] = "2026-07-04T22:20:00.000Z"
+            quote["publishedTime"] = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
             quote["publishedPlatforms"] = platforms
             quote["engagement"] = {
                 "impressions": 720,
@@ -665,8 +709,8 @@ class WebServerHandler(BaseHTTPRequestHandler):
             }
             
             success_log = {
-                "id": f"log_success_{int(asyncio.get_event_loop().time() * 1000)}",
-                "timestamp": "2026-07-04T22:20:04.000Z",
+                "id": f"log_success_{int(time.time() * 1000)}",
+                "timestamp": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
                 "type": "SUCCESS",
                 "message": f"Publication absolute success: marked \"{quote['text'][:30]}...\" as successfully published. Deduplication safeguards active.",
                 "quoteId": quote_id,

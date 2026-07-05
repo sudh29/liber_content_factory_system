@@ -10,6 +10,10 @@ import logging
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 logger = logging.getLogger(__name__)
 
 # Project root is the parent of the `src/` directory
@@ -21,7 +25,7 @@ class PipelineConfig:
     """Configuration for the content generation pipeline."""
 
     # Gemini model to use for all agent calls
-    model: str = "gemini-2.5-flash"
+    model: str = field(default_factory=lambda: os.getenv("GEMINI_MODEL", "gemini-2.5-flash"))
 
     # Output directory for research documents
     output_dir: Path = field(default_factory=lambda: PROJECT_ROOT / "output")

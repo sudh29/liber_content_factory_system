@@ -48,8 +48,8 @@ export function SocialSchedulerApp({ onNavigateToDailyQuotes }: SocialSchedulerA
     }
   });
 
-  const handleAddQuote = (newQuoteData: Omit<ContentItem, 'id' | 'status'>): boolean => {
-    const { success, isDuplicate, quote } = addQuote(newQuoteData);
+  const handleAddQuote = async (newQuoteData: Omit<ContentItem, 'id' | 'status'>): Promise<boolean> => {
+    const { success, isDuplicate, quote } = await addQuote(newQuoteData);
     if (isDuplicate) {
       addLog('ERROR', `Deduplication Failed: Attempted to add duplicate content from ${newQuoteData.author} which was blocked.`);
       return false;
@@ -70,18 +70,18 @@ export function SocialSchedulerApp({ onNavigateToDailyQuotes }: SocialSchedulerA
     addLog('INFO', `Content removed from database index: ${deletedQuote?.author || 'item'}`);
   };
 
-  const handleImportCSV = (importedQuotes: Omit<ContentItem, 'id' | 'status'>[]) => {
+  const handleImportCSV = async (importedQuotes: Omit<ContentItem, 'id' | 'status'>[]) => {
     let added = 0;
     let skippedIdsCount = 0;
     
-    importedQuotes.forEach((im) => {
-      const { success } = addQuote(im);
+    for (const im of importedQuotes) {
+      const { success } = await addQuote(im);
       if (success) {
         added++;
       } else {
         skippedIdsCount++;
       }
-    });
+    }
 
     if (added > 0) {
       addLog('SUCCESS', `Bulk Importer processed: Chronicled ${added} new unique items. Filtered out ${skippedIdsCount} duplicate records.`);
