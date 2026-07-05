@@ -10,14 +10,18 @@ export default {
     extend: {
       colors: {
         brand: {
-          pistachio: '#d4edc0',
-          sage: '#a8c29b',
-          earth: '#3a4a35',
-          green: '#2d6a4f',
-          clay: '#c47854',
-          'pine-dark': '#1a2e21'
+          cream:      '#E8DDD3',   // warm off-white — light text & surfaces
+          gold:       '#C9A96E',   // muted bronze/gold — secondary accent
+          slate:      '#415A77',   // slate blue — mid-tone UI elements
+          terracotta: '#C46D3B',   // rich terracotta — primary warm accent
+          navy:       '#1B2838',   // deep navy — primary dark background
+          midnight:   '#0D1B2A',   // deepest midnight — darkest surfaces
         }
-      }
+      },
+      fontFamily: {
+        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+        display: ['Outfit', 'Inter', 'system-ui', 'sans-serif'],
+      },
     },
   },
   plugins: [],

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ContentItem } from '../../../shared/types';
+import { ContentItem } from '../../shared/types';
 import { Twitter, Instagram, Linkedin, Send, MessageSquare, Sparkles, RefreshCcw, Type, Palette, Copy, AlertCircle, CheckCircle } from 'lucide-react';
 
 interface SocialPreviewProps {
@@ -11,13 +11,13 @@ const GRADIENTS = [
   { name: "Obsidian Night", value: "from-gray-900 to-black text-white" },
   { name: "Sunset Gold", value: "from-amber-500 via-orange-600 to-rose-700 text-white" },
   { name: "Amethyst Ocean", value: "from-blue-600 via-indigo-600 to-purple-800 text-white" },
-  { name: "Forest Sage", value: "from-emerald-800 to-teal-950 text-emerald-50" },
-  { name: "Soft Alabaster", value: "from-stone-50 via-neutral-100 to-stone-200 text-gray-900 border border-gray-200" },
+  { name: "Forest Sage", value: "from-emerald-800 to-teal-950 text-brand-cream" },
+  { name: "Soft Alabaster", value: "from-stone-50 via-neutral-100 to-stone-200 text-brand-navy border border-brand-gold/25" },
   { name: "Rose Whisper", value: "from-rose-500 via-pink-600 to-amber-400 text-white" },
 ];
 
 const FONTS = [
-  { name: "Modern Sans", value: "font-sans font-medium tracking-tight" },
+  { name: "Modern Sans", value: "font-display font-medium tracking-tight" },
   { name: "Editorial Serif", value: "font-serif italic tracking-wide" },
   { name: "Space Mono", value: "font-mono font-normal tracking-tight" },
 ];
@@ -55,10 +55,10 @@ export const SocialPreview: React.FC<SocialPreviewProps> = ({ quote, onEditQuote
 
   if (!quote) {
     return (
-      <div id="no-quote-preview" className="bg-stone-50 dark:bg-slate-900/50 rounded-2xl border border-dashed border-stone-200 dark:border-slate-800 p-10 text-center transition-colors">
-        <Sparkles className="w-10 h-10 text-stone-300 dark:text-slate-750 mx-auto mb-2 animate-pulse" />
-        <h4 className="text-sm font-semibold text-stone-700 dark:text-slate-300 font-sans">Preview Designer Sandbox</h4>
-        <p className="text-xs text-stone-500 dark:text-slate-400 mt-1 max-w-sm mx-auto leading-relaxed">
+      <div id="no-quote-preview" className="bg-stone-50 dark:bg-brand-navy/50 rounded-2xl border border-dashed border-stone-200 dark:border-brand-slate/40 p-10 text-center transition-colors">
+        <Sparkles className="w-10 h-10 text-stone-300 dark:text-brand-slate mx-auto mb-2 animate-pulse" />
+        <h4 className="text-sm font-semibold text-stone-700 dark:text-brand-gold font-display">Preview Designer Sandbox</h4>
+        <p className="text-xs text-stone-500 dark:text-brand-slate/80 mt-1 max-w-sm mx-auto leading-relaxed">
           Select any content item (Quote, Blog, Social Thread) from your repository to preview character limits or format visual cards.
         </p>
       </div>
@@ -82,29 +82,29 @@ export const SocialPreview: React.FC<SocialPreviewProps> = ({ quote, onEditQuote
   };
 
   return (
-    <div id={`social-preview-designer-${quote.id}`} className="bg-white dark:bg-slate-900 rounded-2xl shadow-xs border border-gray-100 dark:border-slate-800 p-6 space-y-6 transition-colors duration-200">
+    <div id={`social-preview-designer-${quote.id}`} className="bg-white dark:bg-brand-navy rounded-2xl shadow-xs border border-brand-gold/20 dark:border-brand-slate/40 p-6 space-y-6 transition-colors duration-200">
       
       {/* Header Info */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-50 dark:border-slate-800 pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-brand-gold/15 dark:border-brand-slate/40 pb-4">
         <div>
-          <span className="text-[10px] bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 px-2 py-0.5 rounded-full font-semibold uppercase tracking-wider">
+          <span className="text-[10px] bg-brand-slate/10 dark:bg-brand-navy/50 text-brand-slate dark:text-brand-gold px-2 py-0.5 rounded-full font-semibold uppercase tracking-wider">
             {quote.type} • {quote.category || "General"}
           </span>
-          <h3 className="font-semibold text-gray-900 dark:text-white text-lg mt-1">Universal Previewer Sandbox</h3>
-          <p className="text-xs text-gray-500 dark:text-gray-400">Preview & format long-form markdown text or generate social image cards.</p>
+          <h3 className="font-semibold text-brand-navy dark:text-brand-cream text-lg mt-1">Universal Previewer Sandbox</h3>
+          <p className="text-xs text-brand-slate dark:text-brand-slate/80">Preview & format long-form markdown text or generate social image cards.</p>
         </div>
         
         <div className="flex items-center gap-4">
-          <div className="flex rounded-lg bg-gray-100 dark:bg-slate-800 p-1 text-xs">
+          <div className="flex rounded-lg bg-brand-cream dark:bg-brand-midnight p-1 text-xs">
             <button
               onClick={() => setPreviewMode('visual')}
-              className={`px-3 py-1 rounded-md font-semibold transition-all ${previewMode === 'visual' ? 'bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-gray-500'}`}
+              className={`px-3 py-1 rounded-md font-semibold transition-all ${previewMode === 'visual' ? 'bg-white dark:bg-brand-navy text-brand-slate dark:text-brand-gold shadow-sm' : 'text-brand-slate'}`}
             >
               Visual Card
             </button>
             <button
               onClick={() => setPreviewMode('document')}
-              className={`px-3 py-1 rounded-md font-semibold transition-all ${previewMode === 'document' ? 'bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-gray-500'}`}
+              className={`px-3 py-1 rounded-md font-semibold transition-all ${previewMode === 'document' ? 'bg-white dark:bg-brand-navy text-brand-slate dark:text-brand-gold shadow-sm' : 'text-brand-slate'}`}
             >
               Document / Text
             </button>
@@ -113,7 +113,7 @@ export const SocialPreview: React.FC<SocialPreviewProps> = ({ quote, onEditQuote
           <button
             id="reset-preview-btn"
             onClick={resetToOriginal}
-            className="text-xs text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 flex items-center gap-1 font-medium cursor-pointer"
+            className="text-xs text-brand-slate dark:text-brand-gold hover:text-brand-slate flex items-center gap-1 font-medium cursor-pointer"
           >
             <RefreshCcw className="w-3.5 h-3.5" />
             Reset Original
@@ -126,7 +126,7 @@ export const SocialPreview: React.FC<SocialPreviewProps> = ({ quote, onEditQuote
         {/* Left Side: Editor Form */}
         <div className="lg:col-span-5 space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-gray-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">
+            <label className="block text-xs font-semibold text-brand-navy/80 dark:text-brand-gold mb-1.5 uppercase tracking-wider">
               Edit Content Draft
             </label>
             <textarea
@@ -137,7 +137,7 @@ export const SocialPreview: React.FC<SocialPreviewProps> = ({ quote, onEditQuote
                 setEditedText(e.target.value);
                 onEditQuoteText(quote.id, e.target.value);
               }}
-              className="w-full text-xs text-gray-850 dark:text-slate-200 border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-950 rounded-xl p-3 focus:outline-none focus:ring-1 focus:ring-indigo-500 leading-relaxed font-sans transition-colors"
+              className="w-full text-xs text-brand-navy dark:text-brand-cream/90 border border-brand-gold/25 dark:border-brand-slate/30 bg-white dark:bg-brand-midnight rounded-xl p-3 focus:outline-none focus:ring-1 focus:ring-brand-terracotta leading-relaxed font-display transition-colors"
               placeholder="Configure text content here..."
             />
           </div>
@@ -152,26 +152,26 @@ export const SocialPreview: React.FC<SocialPreviewProps> = ({ quote, onEditQuote
                 type="text"
                 value={customHashtags}
                 onChange={(e) => setCustomHashtags(e.target.value)}
-                className="w-full text-xs text-sky-900 dark:text-sky-200 bg-white dark:bg-slate-900 border border-sky-200/50 dark:border-sky-900/40 rounded-lg px-2.5 py-1.5 focus:outline-none"
+                className="w-full text-xs text-sky-900 dark:text-sky-200 bg-white dark:bg-brand-navy border border-sky-200/50 dark:border-sky-900/40 rounded-lg px-2.5 py-1.5 focus:outline-none"
               />
             </div>
           )}
 
           {/* Social Tabs Controls */}
           <div className="space-y-1.5">
-            <span className="block text-[10px] font-bold text-gray-400 dark:text-slate-505 uppercase tracking-widest">
+            <span className="block text-[10px] font-bold text-brand-slate/80 dark:text-brand-slate uppercase tracking-widest">
               Select Preview Platform Layout
             </span>
-            <div className="grid grid-cols-5 gap-1 bg-gray-50 dark:bg-slate-950/40 p-1 rounded-xl border border-gray-100 dark:border-slate-800/80">
+            <div className="grid grid-cols-5 gap-1 bg-brand-cream/80 dark:bg-brand-midnight/40 p-1 rounded-xl border border-brand-gold/20 dark:border-brand-slate/40/80">
               <button
                 id="tab-twitter"
                 type="button"
                 onClick={() => setActiveTab('twitter')}
                 className={`py-2 px-1 rounded-lg text-xs font-medium flex flex-col items-center justify-center gap-1 transition-all cursor-pointer ${
-                  activeTab === 'twitter' ? 'bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-xs' : 'text-gray-500 hover:text-gray-900'
+                  activeTab === 'twitter' ? 'bg-white dark:bg-brand-navy text-brand-slate dark:text-brand-gold shadow-xs' : 'text-brand-slate hover:text-brand-navy'
                 }`}
               >
-                <Twitter className="w-4 h-4 text-sky-500" />
+                <Twitter className="w-4 h-4 text-brand-gold" />
                 <span className="text-[9px]">X / Twitter</span>
               </button>
               
@@ -180,10 +180,10 @@ export const SocialPreview: React.FC<SocialPreviewProps> = ({ quote, onEditQuote
                 type="button"
                 onClick={() => setActiveTab('instagram')}
                 className={`py-2 px-1 rounded-lg text-xs font-medium flex flex-col items-center justify-center gap-1 transition-all cursor-pointer ${
-                  activeTab === 'instagram' ? 'bg-white dark:bg-slate-900 text-rose-600 dark:text-rose-400 shadow-xs' : 'text-gray-500 hover:text-gray-900'
+                  activeTab === 'instagram' ? 'bg-white dark:bg-brand-navy text-brand-terracotta dark:text-brand-terracotta shadow-xs' : 'text-brand-slate hover:text-brand-navy'
                 }`}
               >
-                <Instagram className="w-4 h-4 text-pink-500" />
+                <Instagram className="w-4 h-4 text-brand-terracotta" />
                 <span className="text-[9px]">Instagram</span>
               </button>
 
@@ -192,10 +192,10 @@ export const SocialPreview: React.FC<SocialPreviewProps> = ({ quote, onEditQuote
                 type="button"
                 onClick={() => setActiveTab('linkedin')}
                 className={`py-2 px-1 rounded-lg text-xs font-medium flex flex-col items-center justify-center gap-1 transition-all cursor-pointer ${
-                  activeTab === 'linkedin' ? 'bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-xs' : 'text-gray-500 hover:text-gray-900'
+                  activeTab === 'linkedin' ? 'bg-white dark:bg-brand-navy text-brand-slate dark:text-brand-gold shadow-xs' : 'text-brand-slate hover:text-brand-navy'
                 }`}
               >
-                <Linkedin className="w-4 h-4 text-blue-500" />
+                <Linkedin className="w-4 h-4 text-brand-slate" />
                 <span className="text-[9px]">LinkedIn</span>
               </button>
 
@@ -204,7 +204,7 @@ export const SocialPreview: React.FC<SocialPreviewProps> = ({ quote, onEditQuote
                 type="button"
                 onClick={() => setActiveTab('telegram')}
                 className={`py-2 px-1 rounded-lg text-xs font-medium flex flex-col items-center justify-center gap-1 transition-all cursor-pointer ${
-                  activeTab === 'telegram' ? 'bg-white dark:bg-slate-900 text-sky-600 dark:text-sky-400 shadow-xs' : 'text-gray-500 hover:text-gray-900'
+                  activeTab === 'telegram' ? 'bg-white dark:bg-brand-navy text-sky-600 dark:text-sky-400 shadow-xs' : 'text-brand-slate hover:text-brand-navy'
                 }`}
               >
                 <Send className="w-4 h-4 text-cyan-500" />
@@ -216,18 +216,18 @@ export const SocialPreview: React.FC<SocialPreviewProps> = ({ quote, onEditQuote
                 type="button"
                 onClick={() => setActiveTab('whatsapp')}
                 className={`py-2 px-1 rounded-lg text-xs font-medium flex flex-col items-center justify-center gap-1 transition-all cursor-pointer ${
-                  activeTab === 'whatsapp' ? 'bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 shadow-xs' : 'text-gray-500 hover:text-gray-900'
+                  activeTab === 'whatsapp' ? 'bg-white dark:bg-brand-navy text-brand-terracotta dark:text-brand-terracotta shadow-xs' : 'text-brand-slate hover:text-brand-navy'
                 }`}
               >
-                <MessageSquare className="w-4 h-4 text-emerald-500" />
+                <MessageSquare className="w-4 h-4 text-brand-terracotta" />
                 <span className="text-[9px]">WhatsApp</span>
               </button>
             </div>
           </div>
 
           {/* Action Counters / Helpers */}
-          <div className="flex items-center justify-between text-xs pt-2 border-t border-gray-50 dark:border-slate-800">
-            <div className={`flex items-center gap-1 font-mono text-[11px] ${isOverTwitterLimit ? 'text-rose-600 font-bold' : 'text-gray-500 dark:text-slate-400'}`}>
+          <div className="flex items-center justify-between text-xs pt-2 border-t border-brand-gold/15 dark:border-brand-slate/40">
+            <div className={`flex items-center gap-1 font-mono text-[11px] ${isOverTwitterLimit ? 'text-brand-terracotta font-bold' : 'text-brand-slate dark:text-brand-slate/80'}`}>
               <AlertCircle className="w-3.5 h-3.5" />
               <span>
                 {currentLen} {activeTab === 'twitter' ? `/ ${twitterCharLimit} chars` : 'characters'}
@@ -237,15 +237,15 @@ export const SocialPreview: React.FC<SocialPreviewProps> = ({ quote, onEditQuote
             <button
               id="copy-preview-btn"
               onClick={handleCopyText}
-              className="flex items-center gap-1 text-gray-600 dark:text-slate-300 hover:text-gray-900 border border-gray-200 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-850 px-3 py-1.5 rounded-lg text-[11px] cursor-pointer transition-colors"
+              className="flex items-center gap-1 text-brand-navy/70 dark:text-brand-gold hover:text-brand-navy border border-brand-gold/25 dark:border-brand-slate/30 hover:bg-brand-cream/80 dark:hover:bg-brand-midnight px-3 py-1.5 rounded-lg text-[11px] cursor-pointer transition-colors"
             >
-              {copied ? <CheckCircle className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+              {copied ? <CheckCircle className="w-3.5 h-3.5 text-brand-terracotta" /> : <Copy className="w-3.5 h-3.5" />}
               <span>{copied ? "Copied!" : "Copy Content"}</span>
             </button>
           </div>
 
           {isOverTwitterLimit && (
-            <div id="twitter-limit-alert" className="p-2.5 bg-rose-50 dark:bg-rose-955/20 text-rose-800 border-l-4 border-rose-500 rounded-r-lg text-[10px]">
+            <div id="twitter-limit-alert" className="p-2.5 bg-brand-terracotta/10 dark:bg-brand-navy/20 text-brand-terracotta border-l-4 border-rose-500 rounded-r-lg text-[10px]">
               <strong>Exceeds Twitter Limit:</strong> Twitter restricts updates to 280 characters. Please edit down text.
             </div>
           )}
@@ -256,18 +256,18 @@ export const SocialPreview: React.FC<SocialPreviewProps> = ({ quote, onEditQuote
           
           {previewMode === 'visual' ? (
             /* Visual Card Preview (Instagram Quotes Mode) */
-            <div id="instagram-simulator" className="bg-slate-50 dark:bg-slate-950/20 border border-gray-200 dark:border-slate-800 rounded-2xl p-4 space-y-4">
-              <div className="flex flex-wrap gap-2 bg-white dark:bg-slate-950/40 p-2.5 rounded-xl border border-gray-100 dark:border-slate-800 text-[10px]">
-                <div className="flex items-center gap-1 pr-2 border-r border-gray-100 dark:border-slate-800">
-                  <Palette className="w-3.5 h-3.5 text-rose-500" />
-                  <span className="font-bold text-gray-650 dark:text-slate-350">Theme:</span>
+            <div id="instagram-simulator" className="bg-brand-cream/60 dark:bg-brand-midnight/20 border border-brand-gold/25 dark:border-brand-slate/40 rounded-2xl p-4 space-y-4">
+              <div className="flex flex-wrap gap-2 bg-white dark:bg-brand-midnight/40 p-2.5 rounded-xl border border-brand-gold/20 dark:border-brand-slate/40 text-[10px]">
+                <div className="flex items-center gap-1 pr-2 border-r border-brand-gold/20 dark:border-brand-slate/40">
+                  <Palette className="w-3.5 h-3.5 text-brand-terracotta" />
+                  <span className="font-bold text-brand-navy/70 dark:text-brand-gold/70">Theme:</span>
                 </div>
                 {GRADIENTS.map((g) => (
                   <button
                     key={g.name}
                     onClick={() => setActiveGradient(g)}
                     className={`px-2 py-1 rounded-md text-[9px] font-semibold transition-all cursor-pointer ${
-                      activeGradient.name === g.name ? 'ring-2 ring-indigo-650 bg-indigo-50 dark:bg-indigo-950/30 text-indigo-900 dark:text-indigo-200' : 'bg-gray-100 dark:bg-slate-800 text-gray-600'
+                      activeGradient.name === g.name ? 'ring-2 ring-indigo-650 bg-brand-slate/10 dark:bg-brand-navy/30 text-brand-navy dark:text-brand-gold/80' : 'bg-brand-cream dark:bg-brand-midnight text-brand-navy/70'
                     }`}
                   >
                     {g.name}
@@ -275,17 +275,17 @@ export const SocialPreview: React.FC<SocialPreviewProps> = ({ quote, onEditQuote
                 ))}
               </div>
 
-              <div className="flex flex-wrap gap-2.5 bg-white dark:bg-slate-950/40 p-2.5 rounded-xl border border-gray-100 dark:border-slate-800 text-[10px]">
-                <div className="flex items-center gap-1 border-r border-gray-100 dark:border-slate-800 pr-2">
-                  <Type className="w-3.5 h-3.5 text-indigo-500" />
-                  <span className="font-bold text-gray-655">Font:</span>
+              <div className="flex flex-wrap gap-2.5 bg-white dark:bg-brand-midnight/40 p-2.5 rounded-xl border border-brand-gold/20 dark:border-brand-slate/40 text-[10px]">
+                <div className="flex items-center gap-1 border-r border-brand-gold/20 dark:border-brand-slate/40 pr-2">
+                  <Type className="w-3.5 h-3.5 text-brand-slate" />
+                  <span className="font-bold text-brand-navy/70">Font:</span>
                 </div>
                 {FONTS.map((f) => (
                   <button
                     key={f.name}
                     onClick={() => setActiveFont(f)}
                     className={`px-2 py-1 rounded-md text-[9px] font-semibold transition-all cursor-pointer ${
-                      activeFont.name === f.name ? 'ring-2 ring-indigo-650 bg-indigo-50 dark:bg-indigo-950/30 text-indigo-900 dark:text-indigo-200' : 'bg-gray-100 dark:bg-slate-800 text-gray-600'
+                      activeFont.name === f.name ? 'ring-2 ring-indigo-650 bg-brand-slate/10 dark:bg-brand-navy/30 text-brand-navy dark:text-brand-gold/80' : 'bg-brand-cream dark:bg-brand-midnight text-brand-navy/70'
                     }`}
                   >
                     {f.name}
@@ -313,7 +313,7 @@ export const SocialPreview: React.FC<SocialPreviewProps> = ({ quote, onEditQuote
                   )}
 
                   {showCitation && quote.source && (
-                    <p className="text-[10px] mt-1 font-sans italic opacity-60">
+                    <p className="text-[10px] mt-1 font-display italic opacity-60">
                       via {quote.source}
                     </p>
                   )}
@@ -326,25 +326,25 @@ export const SocialPreview: React.FC<SocialPreviewProps> = ({ quote, onEditQuote
             </div>
           ) : (
             /* Document Preview Mode (Articles, Scripts, Emails) */
-            <div className="p-5 bg-stone-50 dark:bg-slate-950 border border-gray-200 dark:border-slate-805 rounded-2xl min-h-[350px] shadow-inner select-text">
-              <div className="border-b border-gray-200 dark:border-slate-800 pb-3 mb-4 flex items-center justify-between text-xs text-gray-500">
-                <span className="font-bold text-gray-800 dark:text-white uppercase tracking-wider">Document Previewer</span>
+            <div className="p-5 bg-stone-50 dark:bg-brand-midnight border border-brand-gold/25 dark:border-brand-slate/30 rounded-2xl min-h-[350px] shadow-inner select-text">
+              <div className="border-b border-brand-gold/25 dark:border-brand-slate/40 pb-3 mb-4 flex items-center justify-between text-xs text-brand-slate">
+                <span className="font-bold text-brand-navy dark:text-brand-cream uppercase tracking-wider">Document Previewer</span>
                 <span className="font-mono">{editedText.split(/\s+/).length} words</span>
               </div>
 
-              <article className="prose dark:prose-invert prose-stone max-w-none text-xs text-gray-900 dark:text-slate-200 leading-relaxed font-sans font-normal space-y-4">
+              <article className="prose dark:prose-invert prose-stone max-w-none text-xs text-brand-navy dark:text-brand-cream/90 leading-relaxed font-display font-normal space-y-4">
                 {quote.title && (
-                  <h1 className="text-lg font-bold text-gray-950 dark:text-white border-b border-gray-150 pb-2 mb-3">
+                  <h1 className="text-lg font-bold text-brand-navy dark:text-brand-cream border-b border-brand-gold/20 pb-2 mb-3">
                     {quote.title}
                   </h1>
                 )}
-                <div className="flex items-center gap-2 text-[10px] text-gray-400 dark:text-slate-500 font-mono mb-4">
+                <div className="flex items-center gap-2 text-[10px] text-brand-slate/80 dark:text-brand-slate font-mono mb-4">
                   <span>Author: {quote.author}</span>
                   <span>•</span>
                   <span>Category: {quote.category}</span>
                 </div>
 
-                <p className="whitespace-pre-wrap font-sans text-gray-850 dark:text-slate-300">
+                <p className="whitespace-pre-wrap font-display text-brand-navy dark:text-brand-gold">
                   {editedText}
                 </p>
               </article>

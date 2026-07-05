@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { ContentItem, ContentType } from '../../../shared/types';
+import { ContentItem, ContentType } from '../../shared/types';
 import { Search, Plus, FileSpreadsheet, Download, Check, Trash, Eye, PenTool, AlertTriangle, ShieldCheck, ListFilter } from 'lucide-react';
 
 interface QuoteManagerProps {
@@ -197,17 +197,17 @@ export const QuoteManager: React.FC<QuoteManagerProps> = ({
   };
 
   return (
-    <div id="quote-repository-card" className="bg-white dark:bg-slate-900 rounded-2xl shadow-xs border border-gray-100 dark:border-slate-800 p-6 space-y-6 transition-colors duration-200">
+    <div id="quote-repository-card" className="bg-white dark:bg-brand-navy rounded-2xl shadow-xs border border-brand-gold/20 dark:border-brand-slate/40 p-6 space-y-6 transition-colors duration-200">
       
       {/* Header Info */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-50 dark:border-slate-800 pb-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-brand-gold/15 dark:border-brand-slate/40 pb-4">
         <div className="flex items-center gap-3">
-          <div className="p-2.5 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 rounded-xl">
+          <div className="p-2.5 bg-brand-slate/10 dark:bg-brand-navy/40 text-brand-slate dark:text-brand-gold rounded-xl">
             <ListFilter className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="font-semibold text-gray-900 dark:text-white text-lg">Universal Content Repository</h3>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Manage multiple AI content formats (Blogs, Social Threads, Quotes, Newsletters).</p>
+            <h3 className="font-semibold text-brand-navy dark:text-brand-cream text-lg">Universal Content Repository</h3>
+            <p className="text-xs text-brand-slate dark:text-brand-slate/80 mt-0.5">Manage multiple AI content formats (Blogs, Social Threads, Quotes, Newsletters).</p>
           </div>
         </div>
 
@@ -216,9 +216,9 @@ export const QuoteManager: React.FC<QuoteManagerProps> = ({
           <button
             id="trigger-csv-import-btn"
             onClick={() => fileInputRef.current?.click()}
-            className="flex items-center gap-1.5 border border-gray-200 dark:border-slate-700 hover:border-gray-300 text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-880 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-colors"
+            className="flex items-center gap-1.5 border border-brand-gold/25 dark:border-brand-slate/30 hover:border-brand-gold/40 text-brand-navy/80 dark:text-brand-gold hover:bg-brand-cream/80 dark:hover:bg-brand-midnight/60 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-colors"
           >
-            <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+            <FileSpreadsheet className="w-3.5 h-3.5 text-brand-terracotta dark:text-brand-terracotta" />
             <span>Import CSV</span>
           </button>
           <input
@@ -233,16 +233,16 @@ export const QuoteManager: React.FC<QuoteManagerProps> = ({
           <button
             id="trigger-csv-export-btn"
             onClick={handleExportCSV}
-            className="flex items-center gap-1.5 border border-gray-200 dark:border-slate-700 hover:border-gray-300 text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-880 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-colors"
+            className="flex items-center gap-1.5 border border-brand-gold/25 dark:border-brand-slate/30 hover:border-brand-gold/40 text-brand-navy/80 dark:text-brand-gold hover:bg-brand-cream/80 dark:hover:bg-brand-midnight/60 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-colors"
           >
-            <Download className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+            <Download className="w-3.5 h-3.5 text-brand-slate dark:text-brand-gold" />
             <span>Backup CSV</span>
           </button>
 
           <button
             id="toggle-add-manual-btn"
             onClick={() => setIsAdding(!isAdding)}
-            className="flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer select-none transition-transform active:scale-95"
+            className="flex items-center gap-1.5 bg-brand-slate hover:bg-brand-slate text-white px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer select-none transition-transform active:scale-95"
           >
             <Plus className="w-4 h-4" />
             <span>Add Content</span>
@@ -252,36 +252,36 @@ export const QuoteManager: React.FC<QuoteManagerProps> = ({
 
       {/* CSV Status Messages */}
       {csvPreviewError && (
-        <div id="csv-error-bubble" className="p-3.5 bg-rose-50 dark:bg-rose-955/20 text-rose-800 dark:text-rose-200 border-l-4 border-rose-500 rounded-r-lg text-xs flex items-start gap-2">
-          <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+        <div id="csv-error-bubble" className="p-3.5 bg-brand-terracotta/10 dark:bg-brand-navy/20 text-brand-terracotta dark:text-brand-terracotta/60 border-l-4 border-rose-500 rounded-r-lg text-xs flex items-start gap-2">
+          <AlertTriangle className="w-4 h-4 text-brand-terracotta shrink-0 mt-0.5" />
           <span>{csvPreviewError}</span>
         </div>
       )}
       {csvSuccessMsg && (
-        <div id="csv-success-bubble" className="p-3.5 bg-emerald-50 dark:bg-emerald-955/20 text-emerald-800 dark:text-emerald-200 border-l-4 border-emerald-500 rounded-r-lg text-xs flex items-start gap-2">
-          <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+        <div id="csv-success-bubble" className="p-3.5 bg-brand-terracotta/10 dark:bg-brand-navy/20 text-brand-terracotta dark:text-brand-terracotta/60 border-l-4 border-emerald-500 rounded-r-lg text-xs flex items-start gap-2">
+          <ShieldCheck className="w-4 h-4 text-brand-terracotta shrink-0 mt-0.5" />
           <span>{csvSuccessMsg}</span>
         </div>
       )}
 
       {/* Manual Insert Form */}
       {isAdding && (
-        <form id="add-manual-quote-form" onSubmit={handleManualSubmit} className="p-4 bg-slate-50/80 dark:bg-slate-950/40 rounded-xl border border-slate-100 dark:border-slate-800 space-y-4">
-          <div className="flex items-center justify-between border-b border-gray-200/50 dark:border-slate-800 pb-2 mb-2">
-            <h4 className="text-xs font-bold text-gray-700 dark:text-slate-350 uppercase tracking-widest flex items-center gap-1">
-              <PenTool className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" /> Create Content Record
+        <form id="add-manual-quote-form" onSubmit={handleManualSubmit} className="p-4 bg-brand-cream/60/80 dark:bg-brand-midnight/40 rounded-xl border border-brand-gold/20 dark:border-brand-slate/40 space-y-4">
+          <div className="flex items-center justify-between border-b border-brand-gold/25/50 dark:border-brand-slate/40 pb-2 mb-2">
+            <h4 className="text-xs font-bold text-brand-navy/80 dark:text-brand-gold/70 uppercase tracking-widest flex items-center gap-1">
+              <PenTool className="w-3.5 h-3.5 text-brand-slate dark:text-brand-gold" /> Create Content Record
             </h4>
-            <span className="text-[10px] bg-indigo-50 dark:bg-indigo-950/50 text-indigo-800 dark:text-indigo-300 px-2 py-0.5 rounded-full">Format Safeguarded</span>
+            <span className="text-[10px] bg-brand-slate/10 dark:bg-brand-navy/50 text-brand-slate dark:text-brand-gold px-2 py-0.5 rounded-full">Format Safeguarded</span>
           </div>
 
           <div className="space-y-3">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-[10px] font-semibold text-gray-700 dark:text-slate-300 mb-1">Content Format Type</label>
+                <label className="block text-[10px] font-semibold text-brand-navy/80 dark:text-brand-gold mb-1">Content Format Type</label>
                 <select
                   value={newType}
                   onChange={(e) => setNewType(e.target.value as ContentType)}
-                  className="w-full text-xs p-2 border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900 rounded-lg focus:outline-none text-gray-900 dark:text-white"
+                  className="w-full text-xs p-2 border border-brand-gold/25 dark:border-brand-slate/30 bg-white dark:bg-brand-navy rounded-lg focus:outline-none text-brand-navy dark:text-brand-cream"
                 >
                   <option value="Quote">Quote (Graphic / Text)</option>
                   <option value="Blog">Blog Article (Markdown)</option>
@@ -293,12 +293,12 @@ export const QuoteManager: React.FC<QuoteManagerProps> = ({
 
               {(newType === 'Blog' || newType === 'Newsletter' || newType === 'Script') && (
                 <div>
-                  <label className="block text-[10px] font-semibold text-gray-700 dark:text-slate-300 mb-1">Title / Headline</label>
+                  <label className="block text-[10px] font-semibold text-brand-navy/80 dark:text-brand-gold mb-1">Title / Headline</label>
                   <input
                     type="text"
                     value={newTitle}
                     onChange={(e) => setNewTitle(e.target.value)}
-                    className="w-full text-xs p-2 border border-gray-200 dark:border-slate-700 rounded-lg focus:outline-none text-gray-900 dark:text-white dark:bg-slate-900"
+                    className="w-full text-xs p-2 border border-brand-gold/25 dark:border-brand-slate/30 rounded-lg focus:outline-none text-brand-navy dark:text-brand-cream dark:bg-brand-navy"
                     placeholder="Enter headline..."
                   />
                 </div>
@@ -306,64 +306,64 @@ export const QuoteManager: React.FC<QuoteManagerProps> = ({
             </div>
 
             <div>
-              <label className="block text-[10px] font-semibold text-gray-700 dark:text-slate-300 mb-1">Content Body / Text</label>
+              <label className="block text-[10px] font-semibold text-brand-navy/80 dark:text-brand-gold mb-1">Content Body / Text</label>
               <textarea
                 id="manual-quote-text"
                 rows={newType === 'Quote' ? 2 : 5}
                 value={newText}
                 onChange={(e) => setNewText(e.target.value)}
-                className="w-full text-xs p-2.5 border border-gray-200 dark:border-slate-700 rounded-lg focus:outline-none text-gray-950 dark:text-white dark:bg-slate-900 font-sans"
+                className="w-full text-xs p-2.5 border border-brand-gold/25 dark:border-brand-slate/30 rounded-lg focus:outline-none text-brand-navy dark:text-brand-cream dark:bg-brand-navy font-display"
                 placeholder={newType === 'Quote' ? "He who has a why to live can bear almost any how..." : "# Subheading\n\nEnter rich markdown content here..."}
               />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="block text-[10px] font-semibold text-gray-700 dark:text-slate-300 mb-1">Attribution / Author</label>
+                <label className="block text-[10px] font-semibold text-brand-navy/80 dark:text-brand-gold mb-1">Attribution / Author</label>
                 <input
                   id="manual-quote-author"
                   type="text"
                   value={newAuthor}
                   onChange={(e) => setNewAuthor(e.target.value)}
-                  className="w-full text-xs p-2 border border-gray-200 dark:border-slate-700 rounded-lg focus:outline-none text-gray-900 dark:text-white dark:bg-slate-900"
+                  className="w-full text-xs p-2 border border-brand-gold/25 dark:border-brand-slate/30 rounded-lg focus:outline-none text-brand-navy dark:text-brand-cream dark:bg-brand-navy"
                   placeholder="Friedrich Nietzsche"
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] font-semibold text-gray-700 dark:text-slate-300 mb-1">Category / Topic</label>
+                <label className="block text-[10px] font-semibold text-brand-navy/80 dark:text-brand-gold mb-1">Category / Topic</label>
                 <input
                   type="text"
                   value={newCategory}
                   onChange={(e) => setNewCategory(e.target.value)}
-                  className="w-full text-xs p-2 border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900 rounded-lg focus:outline-none text-gray-900 dark:text-white"
+                  className="w-full text-xs p-2 border border-brand-gold/25 dark:border-brand-slate/30 bg-white dark:bg-brand-navy rounded-lg focus:outline-none text-brand-navy dark:text-brand-cream"
                   placeholder="Philosophy"
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] font-semibold text-gray-700 dark:text-slate-300 mb-1">Source / Citation (Optional)</label>
+                <label className="block text-[10px] font-semibold text-brand-navy/80 dark:text-brand-gold mb-1">Source / Citation (Optional)</label>
                 <input
                   id="manual-quote-source"
                   type="text"
                   value={newSource}
                   onChange={(e) => setNewSource(e.target.value)}
-                  className="w-full text-xs p-2 border border-gray-200 dark:border-slate-700 rounded-lg focus:outline-none text-gray-900 dark:text-white dark:bg-slate-900"
+                  className="w-full text-xs p-2 border border-brand-gold/25 dark:border-brand-slate/30 rounded-lg focus:outline-none text-brand-navy dark:text-brand-cream dark:bg-brand-navy"
                   placeholder="Twilight of the Idols (1889)"
                 />
               </div>
             </div>
 
             {formError && (
-              <p id="manual-form-error" className="text-rose-600 dark:text-rose-400 font-medium text-[11px] bg-rose-50 dark:bg-rose-955/20 p-2 rounded border border-rose-100 dark:border-rose-900/50 flex items-center gap-1.5">
-                <AlertTriangle className="w-3.5 h-3.5 text-rose-600 shrink-0" />
+              <p id="manual-form-error" className="text-brand-terracotta dark:text-brand-terracotta font-medium text-[11px] bg-brand-terracotta/10 dark:bg-brand-navy/20 p-2 rounded border border-rose-100 dark:border-rose-900/50 flex items-center gap-1.5">
+                <AlertTriangle className="w-3.5 h-3.5 text-brand-terracotta shrink-0" />
                 {formError}
               </p>
             )}
 
             {formSuccess && (
-              <p id="manual-form-success" className="text-emerald-700 dark:text-emerald-400 font-medium text-[11px] bg-emerald-50 dark:bg-emerald-955/20 p-2 rounded border border-emerald-100 dark:border-emerald-900/50 flex items-center gap-1.5">
-                <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+              <p id="manual-form-success" className="text-brand-terracotta dark:text-brand-terracotta font-medium text-[11px] bg-brand-terracotta/10 dark:bg-brand-navy/20 p-2 rounded border border-emerald-100 dark:border-emerald-900/50 flex items-center gap-1.5">
+                <Check className="w-3.5 h-3.5 text-brand-terracotta shrink-0" />
                 {formSuccess}
               </p>
             )}
@@ -373,14 +373,14 @@ export const QuoteManager: React.FC<QuoteManagerProps> = ({
                 id="cancel-add-btn"
                 type="button"
                 onClick={() => setIsAdding(false)}
-                className="px-3.5 py-1.5 border border-gray-200 dark:border-slate-750 text-gray-600 dark:text-slate-300 rounded-lg text-xs cursor-pointer hover:bg-gray-100 dark:hover:bg-slate-800 font-medium"
+                className="px-3.5 py-1.5 border border-brand-gold/25 dark:border-brand-slate/30 text-brand-navy/70 dark:text-brand-gold rounded-lg text-xs cursor-pointer hover:bg-brand-cream dark:hover:bg-brand-midnight/60 font-medium"
               >
                 Cancel
               </button>
               <button
                 id="summit-new-quote-btn"
                 type="submit"
-                className="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs cursor-pointer font-medium"
+                className="px-4 py-1.5 bg-brand-slate hover:bg-brand-slate text-white rounded-lg text-xs cursor-pointer font-medium"
               >
                 Save Content
               </button>
@@ -393,13 +393,13 @@ export const QuoteManager: React.FC<QuoteManagerProps> = ({
       <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
         {/* Search Input */}
         <div className="md:col-span-4 relative">
-          <Search className="w-4 h-4 text-gray-400 absolute left-3 top-3.5" />
+          <Search className="w-4 h-4 text-brand-slate/80 absolute left-3 top-3.5" />
           <input
             id="quote-search-bar"
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full text-xs pl-9 pr-4 py-3 border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-900 dark:text-white rounded-xl focus:outline-none transition-colors"
+            className="w-full text-xs pl-9 pr-4 py-3 border border-brand-gold/25 dark:border-brand-slate/30 bg-white dark:bg-brand-navy text-brand-navy dark:text-brand-cream rounded-xl focus:outline-none transition-colors"
             placeholder="Search by text, author, title..."
           />
         </div>
@@ -409,7 +409,7 @@ export const QuoteManager: React.FC<QuoteManagerProps> = ({
           <select
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value as any)}
-            className="w-full text-xs px-3 py-3 border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900 rounded-xl focus:outline-none cursor-pointer text-gray-700 dark:text-slate-300 transition-colors"
+            className="w-full text-xs px-3 py-3 border border-brand-gold/25 dark:border-brand-slate/30 bg-white dark:bg-brand-navy rounded-xl focus:outline-none cursor-pointer text-brand-navy/80 dark:text-brand-gold transition-colors"
           >
             <option value="all">Filter: All Formats</option>
             <option value="Quote">Quotes</option>
@@ -426,7 +426,7 @@ export const QuoteManager: React.FC<QuoteManagerProps> = ({
             id="status-filter-select"
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value as any)}
-            className="w-full text-xs px-3 py-3 border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900 rounded-xl focus:outline-none cursor-pointer text-gray-700 dark:text-slate-300 transition-colors"
+            className="w-full text-xs px-3 py-3 border border-brand-gold/25 dark:border-brand-slate/30 bg-white dark:bg-brand-navy rounded-xl focus:outline-none cursor-pointer text-brand-navy/80 dark:text-brand-gold transition-colors"
           >
             <option value="all">All Statuses</option>
             <option value="Unpublished">Unpublished</option>
@@ -441,7 +441,7 @@ export const QuoteManager: React.FC<QuoteManagerProps> = ({
             id="category-filter-select"
             value={categoryFilter}
             onChange={(e) => setCategoryFilter(e.target.value)}
-            className="w-full text-xs px-3 py-3 border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900 rounded-xl focus:outline-none cursor-pointer text-gray-700 dark:text-slate-300 transition-colors capitalize"
+            className="w-full text-xs px-3 py-3 border border-brand-gold/25 dark:border-brand-slate/30 bg-white dark:bg-brand-navy rounded-xl focus:outline-none cursor-pointer text-brand-navy/80 dark:text-brand-gold transition-colors capitalize"
           >
             <option value="all">All Topics</option>
             {categories.filter((c) => c !== 'all').map((cat) => (
@@ -455,15 +455,15 @@ export const QuoteManager: React.FC<QuoteManagerProps> = ({
 
       {/* Quote Grid / Table */}
       {filteredQuotes.length === 0 ? (
-        <div className="text-center py-12 border border-dashed border-gray-100 dark:border-slate-800 rounded-2xl bg-stone-50/50 dark:bg-slate-950/30">
-          <Search className="w-8 h-8 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
-          <p className="text-xs text-gray-500 dark:text-gray-400">No content records found matching filters.</p>
+        <div className="text-center py-12 border border-dashed border-brand-gold/20 dark:border-brand-slate/40 rounded-2xl bg-stone-50/50 dark:bg-brand-midnight/30">
+          <Search className="w-8 h-8 text-brand-gold/60 dark:text-brand-navy/70 mx-auto mb-2" />
+          <p className="text-xs text-brand-slate dark:text-brand-slate/80">No content records found matching filters.</p>
         </div>
       ) : (
-        <div className="border border-gray-100 dark:border-slate-800 rounded-xl overflow-hidden shadow-2xs transition-colors">
-          <table className="w-full border-collapse text-left text-xs bg-white dark:bg-slate-900/60">
+        <div className="border border-brand-gold/20 dark:border-brand-slate/40 rounded-xl overflow-hidden shadow-2xs transition-colors">
+          <table className="w-full border-collapse text-left text-xs bg-white dark:bg-brand-navy/60">
             <thead>
-              <tr className="bg-slate-50 dark:bg-slate-950/50 border-b border-gray-100 dark:border-slate-800 text-gray-500 dark:text-gray-400 font-semibold select-none">
+              <tr className="bg-brand-cream/60 dark:bg-brand-midnight/50 border-b border-brand-gold/20 dark:border-brand-slate/40 text-brand-slate dark:text-brand-slate/80 font-semibold select-none">
                 <th className="p-3.5 font-bold uppercase tracking-wider text-[10px]">Title & Preview</th>
                 <th className="p-3.5 font-bold uppercase tracking-wider text-[10px]">Format</th>
                 <th className="p-3.5 font-bold uppercase tracking-wider text-[10px]">Author / Attrib</th>
@@ -479,55 +479,55 @@ export const QuoteManager: React.FC<QuoteManagerProps> = ({
                   <tr
                     key={q.id}
                     id={`quote-row-${q.id}`}
-                    className={`hover:bg-indigo-50/20 dark:hover:bg-slate-800/40 transition-all cursor-pointer ${isSelected ? 'bg-indigo-50/40 dark:bg-indigo-950/30 border-l-4 border-l-indigo-600' : ''}`}
+                    className={`hover:bg-brand-slate/10/20 dark:hover:bg-brand-midnight/60/40 transition-all cursor-pointer ${isSelected ? 'bg-brand-slate/10/40 dark:bg-brand-navy/30 border-l-4 border-l-indigo-600' : ''}`}
                     onClick={() => onSelectQuoteToPreview(q)}
                   >
                     <td className="p-3.5 max-w-sm md:max-w-xl">
                       {q.title && (
-                        <p className="font-bold text-gray-900 dark:text-white text-xs mb-1">
+                        <p className="font-bold text-brand-navy dark:text-brand-cream text-xs mb-1">
                           {q.title}
                         </p>
                       )}
-                      <p className="font-medium text-gray-800 dark:text-gray-300 font-sans truncate">
+                      <p className="font-medium text-brand-navy dark:text-brand-gold/60 font-display truncate">
                         {q.text}
                       </p>
                       {q.source && (
-                        <span className="text-[10px] text-gray-400 dark:text-gray-500 block mt-1 font-serif">
+                        <span className="text-[10px] text-brand-slate/80 dark:text-brand-slate block mt-1 font-serif">
                           Source: {q.source}
                         </span>
                       )}
                     </td>
 
                     <td className="p-3.5 whitespace-nowrap">
-                      <span className="text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-350 px-2.5 py-0.5 rounded-full font-bold">
+                      <span className="text-[10px] bg-brand-cream dark:bg-brand-midnight text-brand-navy/80 dark:text-brand-gold/70 px-2.5 py-0.5 rounded-full font-bold">
                         {q.type}
                       </span>
                     </td>
 
-                    <td className="p-3.5 font-mono text-[11px] font-semibold text-gray-800 dark:text-slate-200 whitespace-nowrap">
+                    <td className="p-3.5 font-mono text-[11px] font-semibold text-brand-navy dark:text-brand-cream/90 whitespace-nowrap">
                       {q.author}
                     </td>
 
                     <td className="p-3.5 whitespace-nowrap">
-                      <span className="text-[10px] bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 px-2 py-0.5 rounded-full font-semibold">
+                      <span className="text-[10px] bg-brand-slate/10 dark:bg-brand-navy/50 text-brand-slate dark:text-brand-gold px-2 py-0.5 rounded-full font-semibold">
                         {q.category || "General"}
                       </span>
                     </td>
 
                     <td className="p-3.5 whitespace-nowrap">
                       {q.status === 'Published' ? (
-                        <span className="text-[10px] bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-100/50 dark:border-emerald-800/50 px-2.5 py-0.5 rounded-full font-semibold inline-flex items-center gap-1">
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                        <span className="text-[10px] bg-brand-terracotta/10 dark:bg-brand-navy/40 text-brand-terracotta dark:text-brand-terracotta/80 border border-emerald-100/50 dark:border-emerald-800/50 px-2.5 py-0.5 rounded-full font-semibold inline-flex items-center gap-1">
+                          <span className="w-1.5 h-1.5 rounded-full bg-brand-terracotta"></span>
                           Published
                         </span>
                       ) : q.status === 'Scheduled' ? (
-                        <span className="text-[10px] bg-blue-50 dark:bg-blue-950/40 text-blue-800 dark:text-blue-300 border border-blue-100/50 dark:border-blue-800/50 px-2.5 py-0.5 rounded-full font-semibold inline-flex items-center gap-1">
-                          <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                        <span className="text-[10px] bg-brand-slate/10 dark:bg-brand-navy/40 text-brand-slate dark:text-brand-gold border border-blue-100/50 dark:border-blue-800/50 px-2.5 py-0.5 rounded-full font-semibold inline-flex items-center gap-1">
+                          <span className="w-1.5 h-1.5 rounded-full bg-brand-slate/100"></span>
                           Scheduled
                         </span>
                       ) : (
-                        <span className="text-[10px] bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-slate-300 px-2.5 py-0.5 rounded-full font-semibold inline-flex items-center gap-1">
-                          <span className="w-1.5 h-1.5 rounded-full bg-gray-400 dark:bg-gray-500"></span>
+                        <span className="text-[10px] bg-brand-cream dark:bg-brand-midnight text-brand-navy/80 dark:text-brand-gold px-2.5 py-0.5 rounded-full font-semibold inline-flex items-center gap-1">
+                          <span className="w-1.5 h-1.5 rounded-full bg-brand-slate/60 dark:bg-brand-gold/60"></span>
                           Unpublished
                         </span>
                       )}
@@ -539,7 +539,7 @@ export const QuoteManager: React.FC<QuoteManagerProps> = ({
                           <button
                             id={`force-publish-btn-${q.id}`}
                             onClick={() => onForcePublish(q.id)}
-                            className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-[10px] px-2 py-1 rounded transition-colors cursor-pointer"
+                            className="bg-brand-terracotta hover:bg-brand-terracotta/80 text-white font-semibold text-[10px] px-2 py-1 rounded transition-colors cursor-pointer"
                           >
                             Publish
                           </button>
@@ -548,7 +548,7 @@ export const QuoteManager: React.FC<QuoteManagerProps> = ({
                         <button
                           id={`select-preview-btn-${q.id}`}
                           onClick={() => onSelectQuoteToPreview(q)}
-                          className="p-1 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50/50 dark:hover:bg-slate-800 rounded transition-colors cursor-pointer"
+                          className="p-1 text-brand-slate/80 hover:text-brand-slate hover:bg-brand-slate/10/50 dark:hover:bg-brand-midnight/60 rounded transition-colors cursor-pointer"
                         >
                           <Eye className="w-4 h-4" />
                         </button>
@@ -556,7 +556,7 @@ export const QuoteManager: React.FC<QuoteManagerProps> = ({
                         <button
                           id={`delete-quote-btn-${q.id}`}
                           onClick={() => onDeleteQuote(q.id)}
-                          className="p-1 text-gray-400 hover:text-rose-600 hover:bg-rose-55 dark:hover:bg-slate-800 rounded transition-colors cursor-pointer"
+                          className="p-1 text-brand-slate/80 hover:text-brand-terracotta hover:bg-brand-terracotta/10 dark:hover:bg-brand-midnight/60 rounded transition-colors cursor-pointer"
                         >
                           <Trash className="w-4 h-4" />
                         </button>

@@ -1,28 +1,73 @@
-import React, { useState } from 'react';
-import { ContentItem } from '../../../shared/types';
-import { Calendar, Clock, ToggleLeft, ToggleRight, Play } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { ContentItem } from '../../shared/types';
+import { Calendar, Clock, ToggleLeft, ToggleRight, Play, CheckCircle2 } from 'lucide-react';
 
 interface SchedulerSettingsProps {
   quotes: ContentItem[]; // Generalized items
-  onScheduleQuote: (quoteId: string, time: string) => void;
+  onScheduleQuote: (quoteId: string, time: string, platforms: string[]) => void;
   onTriggerDailyPost: () => void;
+  preSelectedQuoteId?: string | null;
+  clearPreSelectedQuoteId?: () => void;
+  onPublishNow?: (quoteId: string) => void;
 }
+
+const ALL_PLATFORMS = [
+  { id: 'twitter', name: 'Twitter / X' },
+  { id: 'linkedin', name: 'LinkedIn' },
+  { id: 'telegram', name: 'Telegram' },
+  { id: 'instagram', name: 'Instagram' },
+  { id: 'whatsapp', name: 'WhatsApp' }
+];
 
 export const SchedulerSettings: React.FC<SchedulerSettingsProps> = ({
   quotes,
   onScheduleQuote,
   onTriggerDailyPost,
+  preSelectedQuoteId,
+  clearPreSelectedQuoteId,
+  onPublishNow,
 }) => {
   const [scheduleTime, setScheduleTime] = useState("09:00");
   const [selectedQuoteId, setSelectedQuoteId] = useState("");
+  const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>(['twitter', 'linkedin', 'telegram', 'instagram', 'whatsapp']);
   const [autoPosting, setAutoPosting] = useState(true);
 
   const unpublishedQuotes = quotes.filter((q) => q.status === 'Unpublished');
   const scheduledQuotes = quotes.filter((q) => q.status === 'Scheduled');
+  
+  // Find current selected quote
+  const selectedQuote = quotes.find(q => q.id === selectedQuoteId);
+
+  // Auto-select quote ID when passed from main page
+  useEffect(() => {
+    if (preSelectedQuoteId) {
+      setSelectedQuoteId(preSelectedQuoteId);
+    }
+  }, [preSelectedQuoteId]);
+
+  const handleTogglePlatform = (platformId: string) => {
+    setSelectedPlatforms(prev => 
+      prev.includes(platformId)
+        ? prev.filter(p => p !== platformId)
+        : [...prev, platformId]
+    );
+  };
+
+  const handleSelectAllPlatforms = () => {
+    if (selectedPlatforms.length === ALL_PLATFORMS.length) {
+      setSelectedPlatforms([]);
+    } else {
+      setSelectedPlatforms(ALL_PLATFORMS.map(p => p.id));
+    }
+  };
 
   const handleCreateSchedule = (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedQuoteId) return;
+    if (selectedPlatforms.length === 0) {
+      alert("Please select at least one social media channel to schedule publishing.");
+      return;
+    }
 
     const today = new Date();
     const [hours, minutes] = scheduleTime.split(":");
@@ -32,20 +77,23 @@ export const SchedulerSettings: React.FC<SchedulerSettingsProps> = ({
       today.setDate(today.getDate() + 1);
     }
 
-    onScheduleQuote(selectedQuoteId, today.toISOString());
+    onScheduleQuote(selectedQuoteId, today.toISOString(), selectedPlatforms);
     setSelectedQuoteId("");
+    if (clearPreSelectedQuoteId) {
+      clearPreSelectedQuoteId();
+    }
   };
 
   return (
-    <div id="scheduler-card" className="bg-white dark:bg-slate-900 rounded-2xl shadow-xs border border-gray-100 dark:border-slate-800 p-6 space-y-6 transition-colors duration-200">
-      <div className="flex items-center justify-between mb-6 border-b border-gray-50 dark:border-slate-800 pb-4">
+    <div id="scheduler-card" className="bg-white dark:bg-brand-navy rounded-2xl shadow-xs border border-brand-gold/20 dark:border-brand-slate/40 p-6 space-y-6 transition-colors duration-200">
+      <div className="flex items-center justify-between mb-6 border-b border-brand-gold/15 dark:border-brand-slate/40 pb-4">
         <div className="flex items-center gap-3">
-          <div className="p-2.5 bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 rounded-xl">
+          <div className="p-2.5 bg-brand-gold/15 dark:bg-brand-navy/40 text-brand-gold dark:text-brand-gold rounded-xl">
             <Calendar className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="font-semibold text-gray-900 dark:text-white text-lg">Scheduled Publishing Engine</h3>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Automate and queue up daily publication slots for different content types.</p>
+            <h3 className="font-semibold text-brand-navy dark:text-brand-cream text-lg">Scheduled Publishing Engine</h3>
+            <p className="text-xs text-brand-slate dark:text-brand-slate/80 mt-0.5">Automate and queue up daily publication slots for different content types.</p>
           </div>
         </div>
 
@@ -55,11 +103,11 @@ export const SchedulerSettings: React.FC<SchedulerSettingsProps> = ({
           className="flex items-center gap-1 cursor-pointer select-none"
         >
           {autoPosting ? (
-            <ToggleRight className="w-9 h-9 text-emerald-600" />
+            <ToggleRight className="w-9 h-9 text-brand-terracotta" />
           ) : (
-            <ToggleLeft className="w-9 h-9 text-gray-400 dark:text-slate-650" />
+            <ToggleLeft className="w-9 h-9 text-brand-slate/80 dark:text-brand-slate" />
           )}
-          <span className="text-xs font-semibold text-gray-700 dark:text-slate-350">Auto Publish</span>
+          <span className="text-xs font-semibold text-brand-navy/80 dark:text-brand-gold/70">Auto Publish</span>
         </button>
       </div>
 
@@ -67,38 +115,92 @@ export const SchedulerSettings: React.FC<SchedulerSettingsProps> = ({
         
         {/* Left Side: Create Scheduler queue slot */}
         <div className="lg:col-span-5 space-y-4">
-          <form id="schedule-queue-form" onSubmit={handleCreateSchedule} className="p-4 bg-slate-50/50 dark:bg-slate-950/40 rounded-xl border border-gray-100 dark:border-slate-800 space-y-3">
-            <span className="block text-[10px] font-bold text-gray-400 dark:text-slate-500 uppercase tracking-widest">
+          <form id="schedule-queue-form" onSubmit={handleCreateSchedule} className="p-4 bg-brand-cream/60/50 dark:bg-brand-midnight/40 rounded-xl border border-brand-gold/20 dark:border-brand-slate/40 space-y-4">
+            <span className="block text-[10px] font-bold text-brand-slate/80 dark:text-brand-slate uppercase tracking-widest">
               Schedule Content Queue Slot
             </span>
 
-            <div>
-              <label className="block text-xs font-medium text-gray-700 dark:text-slate-350 mb-1">Select Unpublished Item</label>
-              <select
-                id="schedule-quote-selector"
-                value={selectedQuoteId}
-                onChange={(e) => setSelectedQuoteId(e.target.value)}
-                className="w-full text-xs p-2.5 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white rounded-lg focus:outline-none"
-                required
-              >
-                <option value="" className="text-gray-500 dark:text-slate-400">-- Choose Content --</option>
-                {unpublishedQuotes.map((q) => (
-                  <option key={q.id} value={q.id}>
-                    [{q.type}] {q.title ? `"${q.title}"` : `"${q.text.substring(0, 36)}..."`} (— {q.author})
-                  </option>
-                ))}
-              </select>
+            {preSelectedQuoteId && selectedQuote && (
+              <div className="p-3 bg-brand-terracotta/10 border-l-4 border-brand-terracotta rounded-r-xl text-xs space-y-1">
+                <span className="font-bold text-brand-navy dark:text-brand-cream flex items-center gap-1">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-brand-terracotta" /> Received From Generation Page:
+                </span>
+                <p className="text-[11px] italic text-brand-slate dark:text-brand-gold/80 leading-relaxed truncate">
+                  [{selectedQuote.type}] "{selectedQuote.text}"
+                </p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedQuoteId("");
+                    if (clearPreSelectedQuoteId) clearPreSelectedQuoteId();
+                  }}
+                  className="text-[9px] font-bold text-brand-terracotta hover:underline cursor-pointer"
+                >
+                  Change content selection
+                </button>
+              </div>
+            )}
+
+            {(!preSelectedQuoteId || !selectedQuote) && (
+              <div>
+                <label className="block text-xs font-medium text-brand-navy/80 dark:text-brand-gold/70 mb-1">Select Unpublished Item</label>
+                <select
+                  id="schedule-quote-selector"
+                  value={selectedQuoteId}
+                  onChange={(e) => setSelectedQuoteId(e.target.value)}
+                  className="w-full text-xs p-2.5 bg-white dark:bg-brand-navy border border-brand-gold/25 dark:border-brand-slate/30 text-brand-navy dark:text-brand-cream rounded-lg focus:outline-none"
+                  required
+                >
+                  <option value="" className="text-brand-slate dark:text-brand-slate/80">-- Choose Content --</option>
+                  {unpublishedQuotes.map((q) => (
+                    <option key={q.id} value={q.id}>
+                      [{q.type}] {q.title ? `"${q.title}"` : `"${q.text.substring(0, 36)}..."`} (— {q.author})
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            {/* Social Media Target Channels Checkboxes */}
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between text-xs font-medium text-brand-navy/80 dark:text-brand-gold/70">
+                <span>Select Target Platforms</span>
+                <button
+                  type="button"
+                  onClick={handleSelectAllPlatforms}
+                  className="px-2 py-0.5 bg-brand-slate/10 dark:bg-brand-navy border border-brand-gold/20 hover:bg-brand-slate/20 rounded text-[9px] font-bold text-brand-navy dark:text-brand-gold cursor-pointer"
+                >
+                  {selectedPlatforms.length === ALL_PLATFORMS.length ? "Deselect All" : "Select All"}
+                </button>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2 bg-white dark:bg-brand-navy/60 p-3 rounded-xl border border-brand-gold/25 dark:border-brand-slate/30">
+                {ALL_PLATFORMS.map((platform) => {
+                  const isChecked = selectedPlatforms.includes(platform.id);
+                  return (
+                    <label key={platform.id} className="flex items-center gap-2 text-xs text-brand-navy/80 dark:text-brand-gold/80 cursor-pointer select-none">
+                      <input
+                        type="checkbox"
+                        checked={isChecked}
+                        onChange={() => handleTogglePlatform(platform.id)}
+                        className="rounded text-brand-terracotta focus:ring-brand-terracotta border-brand-gold/25"
+                      />
+                      <span>{platform.name}</span>
+                    </label>
+                  );
+                })}
+              </div>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-medium text-gray-700 dark:text-slate-350 mb-1">Time Slot</label>
+                <label className="block text-xs font-medium text-brand-navy/80 dark:text-brand-gold/70 mb-1">Time Slot</label>
                 <input
                   id="schedule-time-slot"
                   type="time"
                   value={scheduleTime}
                   onChange={(e) => setScheduleTime(e.target.value)}
-                  className="w-full text-xs p-2 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white rounded-lg focus:outline-none"
+                  className="w-full text-xs p-2 bg-white dark:bg-brand-navy border border-brand-gold/25 dark:border-brand-slate/30 text-brand-navy dark:text-brand-cream rounded-lg focus:outline-none"
                 />
               </div>
               
@@ -107,7 +209,7 @@ export const SchedulerSettings: React.FC<SchedulerSettingsProps> = ({
                   id="add-to-schedule-btn"
                   type="submit"
                   disabled={!selectedQuoteId}
-                  className="w-full py-2 bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-150 dark:disabled:bg-slate-805 disabled:text-gray-400 text-white font-semibold text-xs rounded-lg transition-colors cursor-pointer select-none"
+                  className="w-full py-2 bg-brand-slate hover:bg-brand-slate disabled:bg-brand-cream/70 dark:disabled:bg-brand-midnight disabled:text-brand-slate/80 text-white font-semibold text-xs rounded-lg transition-colors cursor-pointer select-none"
                 >
                   Confirm Slot
                 </button>
@@ -116,19 +218,19 @@ export const SchedulerSettings: React.FC<SchedulerSettingsProps> = ({
           </form>
 
           {/* Instant Publish Trigger */}
-          <div className="p-4 bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-100/50 dark:border-emerald-900/40 rounded-xl space-y-2">
+          <div className="p-4 bg-brand-terracotta/10/50 dark:bg-brand-navy/20 border border-emerald-100/50 dark:border-emerald-900/40 rounded-xl space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-emerald-950 dark:text-emerald-250 uppercase tracking-wide">Instant Publisher Sim</span>
-              <span className="bg-emerald-150 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 text-[9px] font-bold px-1.5 py-0.5 rounded-full uppercase">Trigger Event</span>
+              <span className="text-xs font-bold text-brand-navy dark:text-brand-terracotta/70 uppercase tracking-wide">Instant Publisher Sim</span>
+              <span className="bg-brand-terracotta/15 dark:bg-brand-navy/60 text-brand-terracotta dark:text-brand-terracotta/80 text-[9px] font-bold px-1.5 py-0.5 rounded-full uppercase">Trigger Event</span>
             </div>
-            <p className="text-xs text-emerald-800 dark:text-emerald-355 leading-normal">
+            <p className="text-xs text-brand-terracotta dark:text-brand-terracotta leading-normal">
               Trigger instant publication of the next ready content item in the queue to verify REST and webhook integrations immediately.
             </p>
             <button
               id="instant-scheduled-daily-trigger-btn"
               onClick={onTriggerDailyPost}
               disabled={unpublishedQuotes.length === 0}
-              className="w-full py-2 bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-200 dark:disabled:bg-slate-800 disabled:text-white dark:disabled:text-slate-600 text-white font-semibold text-xs rounded-lg flex items-center justify-center gap-1.5 transition-all select-none cursor-pointer shadow-xs"
+              className="w-full py-2 bg-brand-terracotta hover:bg-brand-terracotta/80 disabled:bg-brand-cream dark:disabled:bg-brand-midnight disabled:text-white dark:disabled:text-brand-slate text-white font-semibold text-xs rounded-lg flex items-center justify-center gap-1.5 transition-all select-none cursor-pointer shadow-xs"
             >
               <Play className="w-3.5 h-3.5 fill-current" />
               Trigger Next In-Line
@@ -138,38 +240,46 @@ export const SchedulerSettings: React.FC<SchedulerSettingsProps> = ({
 
         {/* Right Side: Active Scheduled Queue */}
         <div className="lg:col-span-7 space-y-3">
-          <div className="flex items-center justify-between text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">
+          <div className="flex items-center justify-between text-xs font-bold text-brand-slate dark:text-brand-slate/80 uppercase tracking-wider">
             <span>Upcoming Queue ({scheduledQuotes.length})</span>
-            <span className="text-[10px] text-indigo-600 dark:text-indigo-400 font-semibold lowercase">FIFO execution order</span>
+            <span className="text-[10px] text-brand-slate dark:text-brand-gold font-semibold lowercase">FIFO execution order</span>
           </div>
 
           {scheduledQuotes.length === 0 ? (
-            <div className="text-center py-10 border border-dashed border-gray-150 dark:border-slate-800 rounded-xl bg-slate-50/10 dark:bg-slate-950/20">
-              <Clock className="w-8 h-8 text-gray-300 dark:text-slate-650 mx-auto mb-1" />
-              <p className="text-xs text-gray-400 dark:text-slate-500">No scheduled content in queue.</p>
+            <div className="text-center py-10 border border-dashed border-brand-gold/20 dark:border-brand-slate/40 rounded-xl bg-brand-cream/60/10 dark:bg-brand-midnight/20">
+              <Clock className="w-8 h-8 text-brand-gold/60 dark:text-brand-slate mx-auto mb-1" />
+              <p className="text-xs text-brand-slate/80 dark:text-brand-slate">No scheduled content in queue.</p>
             </div>
           ) : (
-            <div className="space-y-2 max-h-[220px] overflow-y-auto">
+            <div className="space-y-2 max-h-[350px] overflow-y-auto">
               {scheduledQuotes.map((q) => {
                 const dateStr = q.scheduledTime ? new Date(q.scheduledTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "";
+                const platformsStr = q.scheduledPlatforms ? q.scheduledPlatforms.join(', ') : "all channels";
                 return (
-                  <div key={q.id} id={`scheduled-item-${q.id}`} className="bg-white dark:bg-slate-950/50 p-3 rounded-xl border border-gray-100 dark:border-slate-850 hover:border-gray-200 dark:hover:border-slate-700 transition-all flex items-center justify-between text-xs gap-3">
+                  <div key={q.id} id={`scheduled-item-${q.id}`} className="bg-white dark:bg-brand-midnight/50 p-3 rounded-xl border border-brand-gold/20 dark:border-brand-slate/40 hover:border-brand-gold/25 dark:hover:border-brand-slate/30 transition-all flex items-center justify-between text-xs gap-3">
                     <div className="flex items-center gap-2.5">
-                      <div className="p-2 bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 rounded-lg shrink-0">
+                      <div className="p-2 bg-brand-slate/10 dark:bg-brand-navy/50 text-brand-slate dark:text-brand-gold rounded-lg shrink-0">
                         <Clock className="w-4 h-4" />
                       </div>
                       <div className="min-w-0">
-                        <p className="font-semibold text-gray-900 dark:text-white truncate">
+                        <p className="font-semibold text-brand-navy dark:text-brand-cream truncate">
                           [{q.type}] {q.title ? `"${q.title}"` : `"${q.text}"`}
                         </p>
-                        <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5">Author: {q.author}</p>
+                        <p className="text-[10px] text-brand-slate dark:text-brand-slate/80 mt-0.5">Author: {q.author}</p>
+                        <p className="text-[9px] text-brand-terracotta dark:text-brand-gold/60 mt-1 font-mono uppercase tracking-wider font-semibold">Targets: {platformsStr}</p>
                       </div>
                     </div>
 
                     <div className="flex items-center gap-2 shrink-0">
-                      <span className="text-[10px] bg-slate-100 dark:bg-slate-800 font-semibold px-2 py-1 rounded text-slate-800 dark:text-slate-200">
+                      <span className="text-[10px] bg-brand-cream dark:bg-brand-midnight font-semibold px-2 py-1 rounded text-brand-navy dark:text-brand-cream/90">
                         {dateStr || "9:00 AM"}
                       </span>
+                      <button
+                        onClick={() => onPublishNow && onPublishNow(q.id)}
+                        className="px-2 py-1 bg-brand-terracotta hover:bg-brand-terracotta/90 text-brand-cream rounded text-[10px] font-bold cursor-pointer select-none transition-all"
+                      >
+                        Publish Now
+                      </button>
                     </div>
                   </div>
                 );

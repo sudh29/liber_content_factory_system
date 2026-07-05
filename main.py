@@ -19,10 +19,14 @@ STRATEGY_REGISTRY: Dict[str, Type[ContentStrategy]] = {}
 def register_strategies():
     """Import and register all available strategies."""
     from src.plugins.quotes_strategy import DailyQuoteStrategy
+    from src.plugins.generic_strategy import GenericContentStrategy
     STRATEGY_REGISTRY["quotes"] = DailyQuoteStrategy
-    # Add other strategies here in the future
-    # STRATEGY_REGISTRY["blog"] = BlogPostStrategy
-    # STRATEGY_REGISTRY["newsletter"] = NewsletterStrategy
+    STRATEGY_REGISTRY["instagram"] = lambda: GenericContentStrategy("instagram")
+    STRATEGY_REGISTRY["blog"] = lambda: GenericContentStrategy("blog")
+    STRATEGY_REGISTRY["twitter_thread"] = lambda: GenericContentStrategy("twitter_thread")
+    STRATEGY_REGISTRY["youtube_script"] = lambda: GenericContentStrategy("youtube_script")
+    STRATEGY_REGISTRY["newsletter"] = lambda: GenericContentStrategy("newsletter")
+
 
 
 def parse_arguments():

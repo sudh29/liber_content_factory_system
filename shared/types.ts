@@ -11,7 +11,7 @@ export type ContentType = 'Quote' | 'Blog' | 'Social' | 'Newsletter' | 'Script';
 
 export interface ContentItem {
   id: string;
-  type: ContentType;
+  type?: ContentType;
   title?: string; // e.g., for Blogs, Newsletters, Scripts
   text: string;
   author: string;
@@ -19,6 +19,7 @@ export interface ContentItem {
   source?: string;
   status: 'Unpublished' | 'Scheduled' | 'Published';
   scheduledTime?: string;
+  scheduledPlatforms?: string[];
   publishedTime?: string;
   publishedPlatforms?: string[];
   engagement?: {
