@@ -27,7 +27,11 @@ async def generate_content(strategy_name: str, topic: str):
     config = load_config()
     logger.info(f"Generating '{strategy_name}' content for topic: {topic}")
 
-    session = Session()
+    session = Session(
+        id="cli-session",
+        appName="content-factory-cli",
+        userId="cli-user",
+    )
     session.state["strategy_name"] = strategy_name
 
     async with tracing_scope():
