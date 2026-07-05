@@ -38,14 +38,6 @@ CREDS_FILE = OUTPUT_DIR / "credentials_db.json"
 # Default preloaded quotes
 DEFAULT_QUOTES = [
   {
-    "id": "q1",
-    "text": "The only limit to our realization of tomorrow will be our doubts of today.",
-    "author": "Franklin D. Roosevelt",
-    "category": "Inspiration",
-    "source": "Address on Jefferson Day (1945)",
-    "status": "Unpublished"
-  },
-  {
     "id": "q2",
     "text": "Waste no more time arguing about what a good man should be. Be one.",
     "author": "Marcus Aurelius",
@@ -489,16 +481,25 @@ class WebServerHandler(BaseHTTPRequestHandler):
     # GET Credentials
     def handle_get_credentials(self):
         default_creds = {
-            "telegramBotToken": "",
-            "telegramChatId": "",
-            "webhookUrl": "",
-            "slackWebhookUrl": "",
+            "telegramBotToken": os.getenv("TELEGRAM_BOT_TOKEN", ""),
+            "telegramChatId": os.getenv("TELEGRAM_CHAT_ID", ""),
+            "webhookUrl": os.getenv("WEBHOOK_URL", ""),
+            "slackWebhookUrl": os.getenv("SLACK_WEBHOOK_URL", ""),
             "mockSettings": {
                 "simulateFailures": False,
                 "autoTrackEngagement": True
             }
         }
         creds = read_json_file(CREDS_FILE, default_creds)
+        # Apply environment overrides if json file has empty strings
+        if not creds.get("telegramBotToken") and os.getenv("TELEGRAM_BOT_TOKEN"):
+            creds["telegramBotToken"] = os.getenv("TELEGRAM_BOT_TOKEN")
+        if not creds.get("telegramChatId") and os.getenv("TELEGRAM_CHAT_ID"):
+            creds["telegramChatId"] = os.getenv("TELEGRAM_CHAT_ID")
+        if not creds.get("webhookUrl") and os.getenv("WEBHOOK_URL"):
+            creds["webhookUrl"] = os.getenv("WEBHOOK_URL")
+        if not creds.get("slackWebhookUrl") and os.getenv("SLACK_WEBHOOK_URL"):
+            creds["slackWebhookUrl"] = os.getenv("SLACK_WEBHOOK_URL")
         self.write_json_response(creds)
 
     # SAVE Credentials
@@ -537,6 +538,10 @@ class WebServerHandler(BaseHTTPRequestHandler):
                 "mockSettings": {"simulateFailures": False, "autoTrackEngagement": True}
             }
             creds = read_json_file(CREDS_FILE, default_creds)
+            if os.getenv("TELEGRAM_BOT_TOKEN"):
+                creds["telegramBotToken"] = os.getenv("TELEGRAM_BOT_TOKEN")
+            if os.getenv("TELEGRAM_CHAT_ID"):
+                creds["telegramChatId"] = os.getenv("TELEGRAM_CHAT_ID")
             logs = read_json_file(LOGS_FILE, [])
 
             # Check for simulated failures

@@ -1,5 +1,6 @@
 import logging
 import os
+import asyncio
 from typing import AsyncGenerator
 from dotenv import load_dotenv
 
@@ -17,6 +18,9 @@ from app.models import DiscoverySchema, ScoringSchema, EvaluationResult
 load_dotenv()
 
 logger = logging.getLogger(__name__)
+
+# Model selection configuration
+gemini_model = Gemini(model=os.getenv("GEMINI_MODEL", "gemini-2.5-flash"))
 
 # --- State Initialization Callback ---
 
@@ -53,7 +57,7 @@ async def init_pipeline_state(callback_context: CallbackContext) -> None:
 # 1. Planner
 planner_agent = Agent(
     name="planner_agent",
-    model=Gemini(model="gemini-2.5-flash"),
+    model=gemini_model,
     instruction="""You are an expert Content Discovery Agent.
 Generate 5 diverse candidate content ideas/themes.
 
@@ -64,6 +68,11 @@ Format the output strictly as JSON following the DiscoverySchema.""",
     output_schema=DiscoverySchema,
     output_key="temp:discovery_raw"
 )
+
+async def prepare_planner_input(callback_context: CallbackContext) -> None:
+    await asyncio.sleep(5.0)
+
+planner_agent.before_agent_callback = prepare_planner_input
 
 async def process_discovery(callback_context: CallbackContext) -> None:
     discovery_raw = callback_context.state.get("temp:discovery_raw")
@@ -96,7 +105,7 @@ class DuplicateDetectorAgent(BaseAgent):
 # 3. Ranker
 ranker_agent = Agent(
     name="ranker_agent",
-    model=Gemini(model="gemini-2.5-flash"),
+    model=gemini_model,
     instruction="""Evaluate and score each of the candidate items on a scale from 0.0 to 10.0.
 
 Criteria:
@@ -109,6 +118,7 @@ Candidates:
 )
 
 async def prepare_ranker_input(callback_context: CallbackContext) -> None:
+    await asyncio.sleep(5.0)
     candidates = callback_context.state.get("candidate_items", [])
     text = "\n".join([f"{i+1}. {c.get('raw_content')}" for i, c in enumerate(candidates)])
     callback_context.state["candidates_text"] = text
@@ -147,13 +157,14 @@ ranker_agent.after_agent_callback = process_ranking
 # 4. Researcher
 researcher_agent = Agent(
     name="researcher_agent",
-    model=Gemini(model="gemini-2.5-flash"),
+    model=gemini_model,
     instruction="""Conduct web research to find interesting facts, context, or background information related to: '{selected_raw_content}'. Summarize the findings concisely.""",
     tools=[google_search],
     output_key="research_data"
 )
 
 async def prepare_researcher_input(callback_context: CallbackContext) -> None:
+    await asyncio.sleep(5.0)
     selected = callback_context.state.get("selected_item", {})
     callback_context.state["selected_raw_content"] = selected.get("raw_content", "")
 
@@ -162,7 +173,7 @@ researcher_agent.before_agent_callback = prepare_researcher_input
 # 5. Generator
 generator_agent = Agent(
     name="generator_agent",
-    model=Gemini(model="gemini-2.5-flash"),
+    model=gemini_model,
     instruction="""You are an expert AI Content Generator. Create the initial draft.
 
 Strategy Guidance:
@@ -178,6 +189,7 @@ Candidate Content:
 )
 
 async def prepare_generator_input(callback_context: CallbackContext) -> None:
+    await asyncio.sleep(5.0)
     feedback = callback_context.state.get("revision_feedback")
     if feedback:
         callback_context.state["revision_feedback_instruction"] = (
@@ -191,7 +203,7 @@ generator_agent.before_agent_callback = prepare_generator_input
 # 6. Validator
 validator_agent = Agent(
     name="validator_agent",
-    model=Gemini(model="gemini-2.5-flash"),
+    model=gemini_model,
     instruction="""Evaluate the following draft.
 
 Draft:
@@ -204,6 +216,11 @@ If it fails any of these criteria, mark passed as false and provide specific fee
     output_schema=EvaluationResult,
     output_key="temp:validation_raw"
 )
+
+async def prepare_validator_input(callback_context: CallbackContext) -> None:
+    await asyncio.sleep(5.0)
+
+validator_agent.before_agent_callback = prepare_validator_input
 
 async def process_validation(callback_context: CallbackContext) -> None:
     val_res = callback_context.state.get("temp:validation_raw")
@@ -241,7 +258,7 @@ refinement_loop = LoopAgent(
 # 8. Platform Formatters
 twitter_formatter = Agent(
     name="twitter_formatter",
-    model=Gemini(model="gemini-2.5-flash"),
+    model=gemini_model,
     instruction="""Format the following content for twitter.
 Original Content:
 {draft}
@@ -251,9 +268,14 @@ Platform Rules:
     output_key="temp:formatted_twitter"
 )
 
+async def prepare_twitter_formatter_input(callback_context: CallbackContext) -> None:
+    await asyncio.sleep(5.0)
+
+twitter_formatter.before_agent_callback = prepare_twitter_formatter_input
+
 linkedin_formatter = Agent(
     name="linkedin_formatter",
-    model=Gemini(model="gemini-2.5-flash"),
+    model=gemini_model,
     instruction="""Format the following content for linkedin.
 Original Content:
 {draft}
@@ -263,9 +285,14 @@ Platform Rules:
     output_key="temp:formatted_linkedin"
 )
 
+async def prepare_linkedin_formatter_input(callback_context: CallbackContext) -> None:
+    await asyncio.sleep(5.0)
+
+linkedin_formatter.before_agent_callback = prepare_linkedin_formatter_input
+
 instagram_formatter = Agent(
     name="instagram_formatter",
-    model=Gemini(model="gemini-2.5-flash"),
+    model=gemini_model,
     instruction="""Format the following content for instagram.
 Original Content:
 {draft}
@@ -275,7 +302,12 @@ Platform Rules:
     output_key="temp:formatted_instagram"
 )
 
-formatters = ParallelAgent(
+async def prepare_instagram_formatter_input(callback_context: CallbackContext) -> None:
+    await asyncio.sleep(5.0)
+
+instagram_formatter.before_agent_callback = prepare_instagram_formatter_input
+
+formatters = SequentialAgent(
     name="formatters",
     sub_agents=[twitter_formatter, linkedin_formatter, instagram_formatter]
 )

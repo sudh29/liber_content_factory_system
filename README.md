@@ -216,3 +216,60 @@ This repository is my submission for the **Google × Kaggle AI Agents: Intensive
 Rather than building a single-purpose AI application, the goal is to showcase a scalable, production-ready agent architecture capable of solving real-world content automation challenges. The Daily Quote Generator serves as the first proof of concept, demonstrating how multiple AI agents can collaborate to research, reason, generate, validate, optimize, and publish content autonomously.
 
 The long-term vision is to evolve this repository into a comprehensive AI Content Automation Platform capable of supporting a wide range of content generation and publishing workflows for creators, businesses, educators, and organizations.
+
+---
+
+# 🚀 Quick Start Guide
+
+### Prerequisites
+Before you start, make sure you have the following installed:
+- **Python 3.10+** with `uv` package manager
+- **Node.js 18+** with `npm`
+- A **Google Gemini API Key** (from [Google AI Studio](https://aistudio.google.com/))
+
+---
+
+### 1. Environment Setup
+
+Copy the environment file template:
+```bash
+cp .env.example .env
+```
+Open the `.env` file and add your configuration details:
+```env
+GEMINI_API_KEY=your_gemini_api_key_here
+
+# Optional: Telegram credentials for direct publishing
+TELEGRAM_BOT_TOKEN=your_telegram_bot_token
+TELEGRAM_CHAT_ID=your_telegram_chat_id
+```
+
+---
+
+### 2. Backend Setup & Run (Python with `uv`)
+
+The Python backend hosts the multi-agent generation pipeline and API endpoints for publishing:
+
+```bash
+# Sync dependencies and set up virtual environment
+uv sync
+
+# Start the API server on port 8000
+uv run python server.py
+```
+
+---
+
+### 3. Frontend Setup & Run (React / Vite)
+
+The React dashboard allows you to generate and publish your content:
+
+```bash
+# Install NPM dependencies
+npm install
+
+# Start the Vite local development server
+npm run dev
+```
+Open `http://localhost:5173` in your web browser to access the interface.
+

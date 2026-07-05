@@ -171,6 +171,7 @@ export function usePublishingEngine(
         quoteId
       };
       setLogsState(prev => [failLog, ...prev]);
+      throw err;
     }
   };
 

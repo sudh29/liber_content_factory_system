@@ -20,6 +20,11 @@ export function useQuotes() {
         if (storedQuotes) {
           let parsed = JSON.parse(storedQuotes) as Quote[];
           let hasChanges = false;
+          const countBefore = parsed.length;
+          parsed = parsed.filter(q => q.id !== "q1" && !q.text.includes("realization of tomorrow"));
+          if (parsed.length !== countBefore) {
+            hasChanges = true;
+          }
           parsed = parsed.map(q => {
             if (q.source === "Meditations, Book X") {
               hasChanges = true;

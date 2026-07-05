@@ -2,14 +2,6 @@ import { Quote } from '../types';
 
 export const DEFAULT_QUOTES: Quote[] = [
   {
-    id: "q1",
-    text: "The only limit to our realization of tomorrow will be our doubts of today.",
-    author: "Franklin D. Roosevelt",
-    category: "Inspiration",
-    source: "Address on Jefferson Day (1945)",
-    status: "Unpublished"
-  },
-  {
     id: "q2",
     text: "Waste no more time arguing about what a good man should be. Be one.",
     author: "Marcus Aurelius",

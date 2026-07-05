@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { ContentItem } from '../shared/types';
 import { useThemeMode } from '../shared/hooks/useThemeMode';
 import { SocialPreview } from './components/SocialPreview';
-import { IntegrationSettings } from './components/IntegrationSettings';
-import { LogsPanel } from './components/LogsPanel';
+
 import { SchedulerSettings } from './components/SchedulerSettings';
 import { AnalyticsCharts } from './components/AnalyticsCharts';
 import { ContentGeneration } from './components/ContentGeneration';
@@ -19,7 +18,7 @@ export function SocialSchedulerApp({ onNavigateToDailyQuotes }: SocialSchedulerA
   const [selectedQuote, setSelectedQuote] = useState<ContentItem | null>(null);
   const [preSelectedQuoteId, setPreSelectedQuoteId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'generate' | 'publishing' | 'analytics'>('generate');
-  const [publishingSubTab, setPublishingSubTab] = useState<'queue' | 'connections' | 'logs'>('queue');
+
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
   const { isDarkMode, toggleDarkMode } = useThemeMode();
 
@@ -108,14 +107,7 @@ export function SocialSchedulerApp({ onNavigateToDailyQuotes }: SocialSchedulerA
     }`;
   };
 
-  const subTabClass = (subTabName: 'queue' | 'connections' | 'logs') => {
-    const isActive = publishingSubTab === subTabName;
-    return `py-2 px-4 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-      isActive
-        ? 'bg-brand-slate text-white dark:bg-brand-gold dark:text-brand-midnight shadow-sm'
-        : 'text-brand-slate dark:text-brand-gold/70 hover:bg-brand-cream/80 dark:hover:bg-brand-midnight/60'
-    }`;
-  };
+
 
   return (
     <div className={isDarkMode ? "dark min-h-screen bg-brand-midnight text-brand-cream select-text pb-20 transition-colors duration-200" : "min-h-screen bg-brand-cream text-brand-navy select-text pb-20 transition-colors duration-200"}>
@@ -203,15 +195,8 @@ export function SocialSchedulerApp({ onNavigateToDailyQuotes }: SocialSchedulerA
               onNavigateToTab={(tab) => {
                 if (tab === 'schedule') {
                   setActiveTab('publishing');
-                  setPublishingSubTab('queue');
                 } else if (tab === 'dashboard') {
                   setActiveTab('analytics');
-                } else if (tab === 'integrations') {
-                  setActiveTab('publishing');
-                  setPublishingSubTab('connections');
-                } else if (tab === 'logs') {
-                  setActiveTab('publishing');
-                  setPublishingSubTab('logs');
                 }
               }}
               setSelectedQuote={setSelectedQuote}
@@ -220,56 +205,16 @@ export function SocialSchedulerApp({ onNavigateToDailyQuotes }: SocialSchedulerA
 
           {/* Publishing & Scheduling Tab */}
           {activeTab === 'publishing' && (
-            <div className="space-y-6">
-              
-              {/* Publishing sub-tabs */}
-              <div className="flex items-center gap-2 bg-brand-cream/60 dark:bg-brand-midnight/40 p-1.5 rounded-xl border border-brand-gold/20 dark:border-brand-slate/40 w-fit select-none">
-                <button id="publishing-subtab-queue" onClick={() => setPublishingSubTab('queue')} className={subTabClass('queue')}>
-                  Queue & Slots Scheduler
-                </button>
-                <button id="publishing-subtab-connections" onClick={() => setPublishingSubTab('connections')} className={subTabClass('connections')}>
-                  Social Integrations ({Object.values(credentials).filter(c => c && typeof c === 'string').length} Active)
-                </button>
-                <button id="publishing-subtab-logs" onClick={() => setPublishingSubTab('logs')} className={subTabClass('logs')}>
-                  Queue Publish Logs ({logs.length})
-                </button>
-              </div>
-
-              {publishingSubTab === 'queue' && (
-                <div className="max-w-6xl mx-auto space-y-6">
-                  <SchedulerSettings
-                    quotes={quotes}
-                    onScheduleQuote={handleScheduleQuote}
-                    onTriggerDailyPost={triggerDailyPost}
-                    preSelectedQuoteId={preSelectedQuoteId}
-                    clearPreSelectedQuoteId={() => setPreSelectedQuoteId(null)}
-                    onPublishNow={publishQuote}
-                  />
-                </div>
-              )}
-
-              {publishingSubTab === 'connections' && (
-                <div className="max-w-3xl mx-auto">
-                  <IntegrationSettings
-                    credentials={credentials}
-                    onChange={setCredentials}
-                    onTestTelegram={testTelegram}
-                    onTestWebhook={testWebhook}
-                  />
-                </div>
-              )}
-
-              {publishingSubTab === 'logs' && (
-                <div className="max-w-4xl mx-auto">
-                  <LogsPanel
-                    logs={logs}
-                    quotes={quotes}
-                    onClearLogs={clearLogs}
-                    onRetryPublish={publishQuote}
-                  />
-                </div>
-              )}
-
+            <div className="max-w-6xl mx-auto space-y-6">
+              <SchedulerSettings
+                quotes={quotes}
+                onScheduleQuote={handleScheduleQuote}
+                onTriggerDailyPost={triggerDailyPost}
+                preSelectedQuoteId={preSelectedQuoteId}
+                clearPreSelectedQuoteId={() => setPreSelectedQuoteId(null)}
+                onPublishNow={publishQuote}
+                logs={logs}
+              />
             </div>
           )}
 
