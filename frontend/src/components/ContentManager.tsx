@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { ContentItem, ContentType } from '../types';
 import { Search, Plus, FileSpreadsheet, Download, Check, Trash, Eye, PenTool, AlertTriangle, ShieldCheck, ListFilter } from 'lucide-react';
 
-interface QuoteManagerProps {
+interface ContentManagerProps {
   quotes: ContentItem[]; // Generalized state array of items
   onAddQuote: (newQuote: Omit<ContentItem, 'id' | 'status'>) => boolean;
   onDeleteQuote: (id: string) => void;
@@ -12,7 +12,7 @@ interface QuoteManagerProps {
   selectedQuoteId?: string;
 }
 
-export const QuoteManager: React.FC<QuoteManagerProps> = ({
+export const ContentManager: React.FC<ContentManagerProps> = ({
   quotes,
   onAddQuote,
   onDeleteQuote,

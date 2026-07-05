@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Quote } from '../types';
-import { DEFAULT_QUOTES } from '../data/defaultQuotes';
+import { DEFAULT_QUOTES } from '../data/defaultContent';
 import { isDuplicateQuote } from '../utils/dedup';
 
-export function useQuotes() {
+export function useContent() {
   const [quotes, setQuotesState] = useState<Quote[]>([]);
 
   const fetchQuotes = async () => {
@@ -55,7 +55,7 @@ export function useQuotes() {
     localStorage.setItem('quotes_repository', JSON.stringify(updatedQuotes));
     
     // Bulk write is not directly exposed as POST, but saving each handles it, or we just write to local cache and wait for individual updates.
-    // In practice, useQuotes only calls setQuotes internally when initializing or resetting, so local cache is correct.
+    // In practice, useContent only calls setQuotes internally when initializing or resetting, so local cache is correct.
   };
 
   const addQuote = async (newQuoteData: Omit<Quote, 'id' | 'status'>): Promise<{ success: boolean; isDuplicate: boolean; quote?: Quote }> => {

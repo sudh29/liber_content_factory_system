@@ -7,7 +7,7 @@ import { SchedulerSettings } from './components/SchedulerSettings';
 import { AnalyticsCharts } from './components/AnalyticsCharts';
 import { ContentGeneration } from './components/ContentGeneration';
 import { BookOpen, Network, Calendar, LayoutDashboard, ScrollText, Sparkles, Sun, Moon, Plus, Eye, BarChart3, Settings, ShieldAlert, X } from 'lucide-react';
-import { useQuotes } from './hooks/useQuotes';
+import { useContent } from './hooks/useContent';
 import { usePublishingEngine } from './hooks/usePublishingEngine';
 
 interface SocialSchedulerAppProps {
@@ -30,7 +30,7 @@ export function SocialSchedulerApp({ onNavigateToDailyQuotes }: SocialSchedulerA
     deleteQuote, 
     scheduleQuote, 
     updateQuoteText 
-  } = useQuotes();
+  } = useContent();
   
   const {
     logs,

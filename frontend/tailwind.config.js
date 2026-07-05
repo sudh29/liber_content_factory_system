@@ -2,8 +2,7 @@
 export default {
   content: [
     "./index.html",
-    "./social-scheduler/**/*.{js,ts,jsx,tsx}",
-    "./shared/**/*.{js,ts,jsx,tsx}",
+    "./src/**/*.{js,ts,jsx,tsx}",
   ],
   darkMode: 'class',
   theme: {
