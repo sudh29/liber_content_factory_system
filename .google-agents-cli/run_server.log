@@ -1,0 +1,153 @@
+2026-07-05 14:30:26,139 - INFO - service_factory.py:266 - Using in-memory memory service
+2026-07-05 14:30:26,139 - INFO - local_storage.py:88 - Using per-agent session storage rooted at /home/liber_primus/code/liber_content_factory_system
+2026-07-05 14:30:26,139 - INFO - local_storage.py:120 - Using per-agent artifact storage rooted at /home/liber_primus/code/liber_content_factory_system
+/home/liber_primus/code/liber_content_factory_system/.venv/lib/python3.13/site-packages/google/adk/cli/fast_api.py:553: UserWarning: [EXPERIMENTAL] InMemoryCredentialService: This feature is experimental and may change or be removed in future versions without notice. It may introduce breaking changes at any time.
+  credential_service = InMemoryCredentialService()
+/home/liber_primus/code/liber_content_factory_system/.venv/lib/python3.13/site-packages/google/adk/auth/credential_service/in_memory_credential_service.py:33: UserWarning: [EXPERIMENTAL] BaseCredentialService: This feature is experimental and may change or be removed in future versions without notice. It may introduce breaking changes at any time.
+  super().__init__()
+INFO:     Started server process [21949]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:18080 (Press CTRL+C to quit)
+INFO:     127.0.0.1:49956 - "GET / HTTP/1.1" 404 Not Found
+2026-07-05 14:30:26,686 - INFO - local_storage.py:64 - Creating local session service at /home/liber_primus/code/liber_content_factory_system/app/.adk/session.db
+2026-07-05 14:30:26,738 - INFO - api_server.py:860 - New session created: 3dfdebc1-1e6a-4fd7-8aaf-60cdebde00b9
+INFO:     127.0.0.1:49970 - "POST /apps/app/users/cli-user/sessions HTTP/1.1" 200 OK
+2026-07-05 14:30:26,743 - INFO - envs.py:83 - Loaded .env file for app at /home/liber_primus/code/liber_content_factory_system/.env
+2026-07-05 14:30:26,745 - INFO - envs.py:83 - Loaded .env file for app at /home/liber_primus/code/liber_content_factory_system/.env
+INFO:     127.0.0.1:49972 - "POST /run_sse HTTP/1.1" 200 OK
+2026-07-05 14:30:26,867 - INFO - google_llm.py:210 - Sending out request, model: gemini-2.5-flash, backend: GoogleLLMVariant.GEMINI_API, stream: False
+2026-07-05 14:30:26,867 - INFO - models.py:8686 - AFC is enabled with max remote calls: 10.
+2026-07-05 14:30:31,893 - INFO - _client.py:1740 - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 503 Service Unavailable"
+2026-07-05 14:30:31,952 - ERROR - api_server.py:1601 - Error in event_generator: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}
+Traceback (most recent call last):
+  File "/home/liber_primus/code/liber_content_factory_system/.venv/lib/python3.13/site-packages/google/adk/cli/api_server.py", line 1573, in event_generator
+    async for event in agen:
+    ...<25 lines>...
+        yield f"data: {sse_event}\n\n"
+  File "/home/liber_primus/code/liber_content_factory_system/.venv/lib/python3.13/site-packages/google/adk/runners.py", line 1133, in run_async
+    async for event in agen:
+      yield event
+  File "/home/liber_primus/code/liber_content_factory_system/.venv/lib/python3.13/site-packages/google/adk/runners.py", line 1116, in _run_with_trace
+    async for event in agen:
+      yield event
+  File "/home/liber_primus/code/liber_content_factory_system/.venv/lib/python3.13/site-packages/google/adk/runners.py", line 1378, in _exec_with_plugin
+    async for event in agen:
+    ...<29 lines>...
+      yield output_event
+  File "/home/liber_primus/code/liber_content_factory_system/.venv/lib/python3.13/site-packages/google/adk/runners.py", line 1105, in execute
+    async for event in agen:
+      yield event
+  File "/home/liber_primus/code/liber_content_factory_system/.venv/lib/python3.13/site-packages/google/adk/agents/base_agent.py", line 305, in run_async
+    async for event in agen:
+      yield event
+  File "/home/liber_primus/code/liber_content_factory_system/app/agent.py", line 363, in _run_async_impl
+    async for event in pipeline.run_async(ctx):
+        yield event
+  File "/home/liber_primus/code/liber_content_factory_system/.venv/lib/python3.13/site-packages/google/adk/agents/base_agent.py", line 305, in run_async
+    async for event in agen:
+      yield event
+  File "/home/liber_primus/code/liber_content_factory_system/.venv/lib/python3.13/site-packages/google/adk/agents/sequential_agent.py", line 92, in _run_async_impl
+    async for event in agen:
+    ...<2 lines>...
+        pause_invocation = True
+  File "/home/liber_primus/code/liber_content_factory_system/.venv/lib/python3.13/site-packages/google/adk/agents/base_agent.py", line 305, in run_async
+    async for event in agen:
+      yield event
+  File "/home/liber_primus/code/liber_content_factory_system/.venv/lib/python3.13/site-packages/google/adk/agents/llm_agent.py", line 515, in _run_async_impl
+    async for event in agen:
+    ...<5 lines>...
+        should_pause = True
+  File "/home/liber_primus/code/liber_content_factory_system/.venv/lib/python3.13/site-packages/google/adk/flows/llm_flows/base_llm_flow.py", line 889, in run_async
+    async for event in agen:
+      last_event = event
+      yield event
+  File "/home/liber_primus/code/liber_content_factory_system/.venv/lib/python3.13/site-packages/google/adk/flows/llm_flows/base_llm_flow.py", line 968, in _run_one_step_async
+    async for llm_response in agen:
+    ...<13 lines>...
+          yield event
+  File "/home/liber_primus/code/liber_content_factory_system/.venv/lib/python3.13/site-packages/google/adk/flows/llm_flows/base_llm_flow.py", line 1362, in _call_llm_async
+    async for event in agen:
+      yield event
+  File "/home/liber_primus/code/liber_content_factory_system/.venv/lib/python3.13/site-packages/google/adk/flows/llm_flows/base_llm_flow.py", line 1340, in _call_llm_with_tracing
+    async for llm_response in agen:
+    ...<18 lines>...
+      yield llm_response
+  File "/home/liber_primus/code/liber_content_factory_system/.venv/lib/python3.13/site-packages/google/adk/flows/llm_flows/base_llm_flow.py", line 1423, in _run_and_handle_error
+    async for response in agen:
+      yield response
+  File "/home/liber_primus/code/liber_content_factory_system/.venv/lib/python3.13/site-packages/google/adk/flows/llm_flows/base_llm_flow.py", line 408, in _run_and_handle_error
+    raise model_error
+  File "/home/liber_primus/code/liber_content_factory_system/.venv/lib/python3.13/site-packages/google/adk/flows/llm_flows/base_llm_flow.py", line 385, in _run_and_handle_error
+    async for llm_response in agen:
+      tel_ctx.record_llm_response(invocation_context, llm_response)
+      yield llm_response
+  File "/home/liber_primus/code/liber_content_factory_system/.venv/lib/python3.13/site-packages/google/adk/models/google_llm.py", line 274, in generate_content_async
+    response = await self.api_client.aio.models.generate_content(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/home/liber_primus/code/liber_content_factory_system/.venv/lib/python3.13/site-packages/google/genai/models.py", line 8707, in generate_content
+    response = await self._generate_content(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        model=model, contents=contents, config=final_parsed_config_to_call
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/liber_primus/code/liber_content_factory_system/.venv/lib/python3.13/site-packages/google/genai/models.py", line 7153, in _generate_content
+    response = await self._api_client.async_request(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        'post', path, request_dict, http_options
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/liber_primus/code/liber_content_factory_system/.venv/lib/python3.13/site-packages/google/genai/_api_client.py", line 1664, in async_request
+    result = await self._async_request(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+        http_request=http_request, http_options=http_options, stream=False
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/liber_primus/code/liber_content_factory_system/.venv/lib/python3.13/site-packages/google/genai/_api_client.py", line 1597, in _async_request
+    return await self._async_retry(  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        self._async_request_once, http_request, stream
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/liber_primus/code/liber_content_factory_system/.venv/lib/python3.13/site-packages/tenacity/asyncio/__init__.py", line 112, in __call__
+    do = await self.iter(retry_state=retry_state)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/liber_primus/code/liber_content_factory_system/.venv/lib/python3.13/site-packages/tenacity/asyncio/__init__.py", line 157, in iter
+    result = await action(retry_state)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/liber_primus/code/liber_content_factory_system/.venv/lib/python3.13/site-packages/tenacity/_utils.py", line 111, in inner
+    return call(*args, **kwargs)
+  File "/home/liber_primus/code/liber_content_factory_system/.venv/lib/python3.13/site-packages/tenacity/__init__.py", line 413, in exc_check
+    raise retry_exc.reraise()
+          ~~~~~~~~~~~~~~~~~^^
+  File "/home/liber_primus/code/liber_content_factory_system/.venv/lib/python3.13/site-packages/tenacity/__init__.py", line 184, in reraise
+    raise self.last_attempt.result()
+          ~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/liber_primus/.local/share/uv/python/cpython-3.13.12-linux-x86_64-gnu/lib/python3.13/concurrent/futures/_base.py", line 449, in result
+    return self.__get_result()
+           ~~~~~~~~~~~~~~~~~^^
+  File "/home/liber_primus/.local/share/uv/python/cpython-3.13.12-linux-x86_64-gnu/lib/python3.13/concurrent/futures/_base.py", line 401, in __get_result
+    raise self._exception
+  File "/home/liber_primus/code/liber_content_factory_system/.venv/lib/python3.13/site-packages/tenacity/asyncio/__init__.py", line 116, in __call__
+    result = await fn(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/liber_primus/code/liber_content_factory_system/.venv/lib/python3.13/site-packages/google/genai/_api_client.py", line 1577, in _async_request_once
+    await errors.APIError.raise_for_async_response(client_response)
+  File "/home/liber_primus/code/liber_content_factory_system/.venv/lib/python3.13/site-packages/google/genai/errors.py", line 247, in raise_for_async_response
+    await cls.raise_error_async(status_code, response_json, response)
+  File "/home/liber_primus/code/liber_content_factory_system/.venv/lib/python3.13/site-packages/google/genai/errors.py", line 271, in raise_error_async
+    raise ServerError(status_code, response_json, response)
+google.genai.errors.ServerError: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2026-07-05 14:30:32,165 - INFO - runners.py:2115 - Closing runner...
+2026-07-05 14:30:32,165 - INFO - runners.py:2128 - Runner closed.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [21949]

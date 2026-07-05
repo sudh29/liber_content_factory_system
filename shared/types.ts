@@ -7,14 +7,19 @@ export interface SocialPlatform {
   themeColor: string;
 }
 
-export interface Quote {
+export type ContentType = 'Quote' | 'Blog' | 'Social' | 'Newsletter' | 'Script';
+
+export interface ContentItem {
   id: string;
+  type?: ContentType;
+  title?: string; // e.g., for Blogs, Newsletters, Scripts
   text: string;
   author: string;
   category: string;
   source?: string;
   status: 'Unpublished' | 'Scheduled' | 'Published';
   scheduledTime?: string;
+  scheduledPlatforms?: string[];
   publishedTime?: string;
   publishedPlatforms?: string[];
   engagement?: {
@@ -24,6 +29,9 @@ export interface Quote {
   };
   errorMessage?: string;
 }
+
+// Alias for backwards compatibility
+export type Quote = ContentItem;
 
 export interface IntegrationCredentials {
   telegramBotToken: string;

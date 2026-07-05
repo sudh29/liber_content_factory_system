@@ -18,29 +18,64 @@ export function usePublishingEngine(
     },
   });
 
-  useEffect(() => {
+  const fetchLogs = async () => {
     try {
-      const storedLogs = localStorage.getItem('quotes_audit_logs');
-      if (storedLogs) {
-        setLogsState(JSON.parse(storedLogs));
+      const res = await fetch('/api/logs');
+      if (res.ok) {
+        const data = await res.json() as AuditLog[];
+        setLogsState(data);
+        localStorage.setItem('quotes_audit_logs', JSON.stringify(data));
       } else {
-        const initialLog: AuditLog = {
-          id: "log_initial",
-          timestamp: new Date().toISOString(),
-          type: 'INFO',
-          message: "Daily Quotes Publishing Platform initialized. Preloaded curated authentic historical dataset of verified figures.",
-        };
-        setLogsState([initialLog]);
-        localStorage.setItem('quotes_audit_logs', JSON.stringify([initialLog]));
-      }
-
-      const storedCreds = localStorage.getItem('quotes_api_credentials');
-      if (storedCreds) {
-        setCredentialsState(JSON.parse(storedCreds));
+        throw new Error("Logs failed");
       }
     } catch (e) {
-      console.error("Local storage load error", e);
+      console.warn("Backend API logs offline/error. Using localStorage cache.");
+      try {
+        const storedLogs = localStorage.getItem('quotes_audit_logs');
+        if (storedLogs) {
+          setLogsState(JSON.parse(storedLogs));
+        } else {
+          const initialLog: AuditLog = {
+            id: "log_initial",
+            timestamp: new Date().toISOString(),
+            type: 'INFO',
+            message: "Daily Quotes Publishing Platform initialized. Preloaded curated authentic historical dataset of verified figures.",
+          };
+          setLogsState([initialLog]);
+          localStorage.setItem('quotes_audit_logs', JSON.stringify([initialLog]));
+        }
+      } catch (err) {
+        console.error("Local storage load error", err);
+      }
     }
+  };
+
+  const fetchCredentials = async () => {
+    try {
+      const res = await fetch('/api/credentials');
+      if (res.ok) {
+        const data = await res.json() as IntegrationCredentials;
+        setCredentialsState(data);
+        localStorage.setItem('quotes_api_credentials', JSON.stringify(data));
+      } else {
+        throw new Error("Creds failed");
+      }
+    } catch (e) {
+      console.warn("Backend API credentials offline/error. Using localStorage cache.");
+      try {
+        const storedCreds = localStorage.getItem('quotes_api_credentials');
+        if (storedCreds) {
+          setCredentialsState(JSON.parse(storedCreds));
+        }
+      } catch (err) {
+        console.error("Local storage load error", err);
+      }
+    }
+  };
+
+  useEffect(() => {
+    fetchLogs();
+    fetchCredentials();
   }, []);
 
   const setLogs = (updatedLogs: AuditLog[]) => {
@@ -67,93 +102,75 @@ export function usePublishingEngine(
   const setCredentials = (newCreds: IntegrationCredentials) => {
     setCredentialsState(newCreds);
     localStorage.setItem('quotes_api_credentials', JSON.stringify(newCreds));
+    
+    // Save to backend server
+    fetch('/api/credentials', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newCreds)
+    }).catch(err => console.error("Failed to save credentials to backend:", err));
   };
 
-  const publishQuote = async (quoteId: string, targetPlatforms: string[] = ['twitter', 'linkedin', 'telegram', 'instagram', 'whatsapp']) => {
-    addLog('INFO', `Starting simultaneous publication cycle for platforms: ${targetPlatforms.join(', ')}...`, quoteId);
-
+  const publishQuote = async (quoteId: string, targetPlatforms?: string[]) => {
     const quoteToPublish = quotes.find((q) => q.id === quoteId);
     if (!quoteToPublish) {
       addLog('ERROR', "Publication aborted: Specified quote file could not be fetched from index cache.");
       return;
     }
 
-    if (credentials.mockSettings.simulateFailures && Math.random() > 0.5) {
-      const updated = quotes.map((q) => {
-        if (q.id === quoteId) {
-          return {
-            ...q,
-            status: 'Unpublished' as const,
-            errorMessage: "Transient HTTP 503 Service Unavailable: Simulated cloud endpoint failure. Check network relays.",
-          };
-        }
-        return q;
-      });
-      setQuotes(updated);
-      addLog('ERROR', `Publishing Failure Simulated: Simultaneously dispatching to ${targetPlatforms.join(', ')} failed. Re-queued.`, quoteId);
-      return;
-    }
+    const platforms = targetPlatforms || quoteToPublish.scheduledPlatforms || ['twitter', 'linkedin', 'telegram', 'instagram', 'whatsapp'];
 
-    if (credentials.telegramBotToken && credentials.telegramChatId) {
-      try {
-        const textPayload = `"${quoteToPublish.text}"\n\n— ${quoteToPublish.author}\n\n#dailyquote #philosophy`;
-        const url = `https://api.telegram.org/bot${credentials.telegramBotToken}/sendMessage`;
-        const res = await fetch(url, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            chat_id: credentials.telegramChatId,
-            text: textPayload,
-          }),
-        });
-        if (!res.ok) throw new Error(`Telegram API responded with code ${res.status}`);
-        addLog('SUCCESS', `Telegram Bot API: Successfully transmitted quote live to channel chat: ${credentials.telegramChatId}`, quoteId);
-      } catch (err: any) {
-        addLog('ERROR', `Telegram Bot Integration Error: ${err.message || err}`, quoteId);
-      }
-    }
-
-    if (credentials.webhookUrl) {
-      try {
-        const res = await fetch(credentials.webhookUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            event: "quote_publish",
-            timestamp: new Date().toISOString(),
-            quote: quoteToPublish.text,
-            author: quoteToPublish.author,
-            source: quoteToPublish.source,
-            category: quoteToPublish.category,
-            platforms: targetPlatforms,
-          }),
-        });
-        if (!res.ok) throw new Error(`Webhook returned status ${res.status}`);
-        addLog('SUCCESS', `Generic Webhook Dispatched: POST success on target address ${credentials.webhookUrl}`, quoteId);
-      } catch (err: any) {
-        addLog('ERROR', `Generic Webhook failed: ${err.message || err}`, quoteId);
-      }
-    }
-
-    const updatedQuote = {
-      ...quoteToPublish,
-      status: 'Published' as const,
-      publishedTime: new Date().toISOString(),
-      publishedPlatforms: targetPlatforms,
-      errorMessage: undefined,
-      engagement: {
-        impressions: Math.floor(Math.random() * 800) + 400,
-        likes: Math.floor(Math.random() * 90) + 10,
-        shares: Math.floor(Math.random() * 15) + 3,
-      },
+    // Temporary logs state update for immediate feedback
+    const startMsg = `Starting simultaneous publication cycle for platforms: ${platforms.join(', ')}...`;
+    const tempStartLog: AuditLog = {
+      id: `log_temp_${Date.now()}`,
+      timestamp: new Date().toISOString(),
+      type: 'INFO',
+      message: startMsg,
+      quoteId
     };
+    setLogsState(prev => [tempStartLog, ...prev]);
 
-    const updated = quotes.map((q) => (q.id === quoteId ? updatedQuote : q));
-    setQuotes(updated);
-    addLog('SUCCESS', `Publication absolute success: marked "${quoteToPublish.text.substring(0, 30)}..." as successfully published. Deduplication safeguards active.`, quoteId, targetPlatforms);
-    
-    if (onQuotePublished) {
-      onQuotePublished(updatedQuote);
+    try {
+      const res = await fetch('/api/publish', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ quoteId, platforms })
+      });
+
+      if (!res.ok) {
+        throw new Error(await res.text() || "Publish failed");
+      }
+
+      const result = await res.json();
+      
+      // Update local state with quotes and logs from response
+      if (result.success && result.quote) {
+        const updatedQuote = result.quote;
+        const updatedQuotes = quotes.map(q => q.id === quoteId ? updatedQuote : q);
+        setQuotes(updatedQuotes);
+        
+        if (result.logs) {
+          setLogsState(result.logs);
+          localStorage.setItem('quotes_audit_logs', JSON.stringify(result.logs));
+        }
+
+        if (onQuotePublished) {
+          onQuotePublished(updatedQuote);
+        }
+      }
+    } catch (err: any) {
+      console.error("Failed to publish quote:", err);
+      
+      // Local fallback in case server fails
+      const failLog: AuditLog = {
+        id: `log_fail_${Date.now()}`,
+        timestamp: new Date().toISOString(),
+        type: 'ERROR',
+        message: `Publish failed: ${err.message}`,
+        quoteId
+      };
+      setLogsState(prev => [failLog, ...prev]);
     }
   };
 
@@ -205,15 +222,23 @@ export function usePublishingEngine(
   };
 
   const clearLogs = () => {
-    const cleanLogs = [
-      {
-        id: "log_initial",
-        timestamp: new Date().toISOString(),
-        type: 'INFO' as const,
-        message: "System Logs & Audit archives successfully cleared.",
-      }
-    ];
-    setLogs(cleanLogs);
+    fetch('/api/logs/clear', { method: 'POST' })
+      .then(res => res.json())
+      .then(data => {
+        setLogsState(data);
+        localStorage.setItem('quotes_audit_logs', JSON.stringify(data));
+      })
+      .catch(err => {
+        console.error("Failed to clear logs on backend:", err);
+        const clean = [{
+          id: "log_initial",
+          timestamp: new Date().toISOString(),
+          type: 'INFO' as const,
+          message: "System Logs & Audit archives successfully cleared.",
+        }];
+        setLogsState(clean);
+        localStorage.setItem('quotes_audit_logs', JSON.stringify(clean));
+      });
   };
 
   return {
