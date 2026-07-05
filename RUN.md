@@ -65,6 +65,22 @@ uv run main.py --file path/to/prompt.txt
 uv run main.py --verbose --input "Write a thread about vibe coding."
 ```
 
+### Running Agents Individually (Testing & Debugging)
+
+Since this project is built using the Google Agent Development Kit (ADK), you can use the `agents-cli` to interact with and test your agents individually without running the full web server.
+
+```bash
+# Option A: Interactive Web Playground (Recommended)
+# This opens a local web interface where you can chat with your agent, 
+# inspect state changes, and see individual agent reasoning steps.
+uvx google-agents-cli playground
+
+# Option B: Run via CLI (Non-interactive)
+# Run a single prompt through the agent pipeline and see the output in the terminal.
+# Add -v for full JSON event payloads, which is great for debugging tool calls.
+uvx google-agents-cli run "Write a thread about vibe coding." -v
+```
+
 ### Running Backend Tests
 Ensure all agent capabilities, guardrails, and validation retries are working:
 

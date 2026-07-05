@@ -151,3 +151,65 @@ INFO:     Waiting for application shutdown.
 2026-07-05 14:30:32,165 - INFO - runners.py:2128 - Runner closed.
 INFO:     Application shutdown complete.
 INFO:     Finished server process [21949]
+2026-07-05 19:01:50,188 - INFO - service_factory.py:266 - Using in-memory memory service
+2026-07-05 19:01:50,189 - INFO - local_storage.py:88 - Using per-agent session storage rooted at /home/liber_primus/code/liber_content_factory_system
+2026-07-05 19:01:50,189 - INFO - local_storage.py:120 - Using per-agent artifact storage rooted at /home/liber_primus/code/liber_content_factory_system
+/home/liber_primus/code/liber_content_factory_system/.venv/lib/python3.13/site-packages/google/adk/cli/fast_api.py:553: UserWarning: [EXPERIMENTAL] InMemoryCredentialService: This feature is experimental and may change or be removed in future versions without notice. It may introduce breaking changes at any time.
+  credential_service = InMemoryCredentialService()
+/home/liber_primus/code/liber_content_factory_system/.venv/lib/python3.13/site-packages/google/adk/auth/credential_service/in_memory_credential_service.py:33: UserWarning: [EXPERIMENTAL] BaseCredentialService: This feature is experimental and may change or be removed in future versions without notice. It may introduce breaking changes at any time.
+  super().__init__()
+INFO:     Started server process [53997]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:18080 (Press CTRL+C to quit)
+INFO:     127.0.0.1:50098 - "GET / HTTP/1.1" 404 Not Found
+2026-07-05 19:01:50,793 - INFO - local_storage.py:64 - Creating local session service at /home/liber_primus/code/liber_content_factory_system/app/.adk/session.db
+2026-07-05 19:01:50,811 - INFO - api_server.py:860 - New session created: ed392879-f1e9-4fc4-a7d0-fb500b916312
+INFO:     127.0.0.1:50110 - "POST /apps/app/users/cli-user/sessions HTTP/1.1" 200 OK
+2026-07-05 19:01:50,822 - INFO - envs.py:83 - Loaded .env file for app at /home/liber_primus/code/liber_content_factory_system/.env
+2026-07-05 19:01:50,825 - INFO - envs.py:83 - Loaded .env file for app at /home/liber_primus/code/liber_content_factory_system/.env
+INFO:     127.0.0.1:50112 - "POST /run_sse HTTP/1.1" 200 OK
+2026-07-05 19:01:56,022 - INFO - google_llm.py:210 - Sending out request, model: gemini-2.5-flash, backend: GoogleLLMVariant.GEMINI_API, stream: False
+2026-07-05 19:01:56,023 - INFO - models.py:8686 - AFC is enabled with max remote calls: 10.
+2026-07-05 19:02:01,858 - INFO - _client.py:1740 - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-07-05 19:02:01,863 - INFO - google_llm.py:279 - Response received from the model.
+2026-07-05 19:02:01,905 - INFO - tools.py:20 - ADK Duplicate Detection Tool: Filtering candidates...
+2026-07-05 19:02:03,292 - INFO - _client.py:1740 - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-001:batchEmbedContents "HTTP/1.1 200 OK"
+2026-07-05 19:02:08,510 - INFO - google_llm.py:210 - Sending out request, model: gemini-2.5-flash, backend: GoogleLLMVariant.GEMINI_API, stream: False
+2026-07-05 19:02:08,511 - INFO - models.py:8686 - AFC is enabled with max remote calls: 10.
+2026-07-05 19:02:17,422 - INFO - _client.py:1740 - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-07-05 19:02:17,425 - INFO - google_llm.py:279 - Response received from the model.
+2026-07-05 19:02:22,488 - INFO - google_llm.py:210 - Sending out request, model: gemini-2.5-flash, backend: GoogleLLMVariant.GEMINI_API, stream: False
+2026-07-05 19:02:22,489 - INFO - models.py:8686 - AFC is enabled with max remote calls: 10.
+2026-07-05 19:02:32,987 - INFO - _client.py:1740 - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-07-05 19:02:32,993 - INFO - google_llm.py:279 - Response received from the model.
+2026-07-05 19:02:38,044 - INFO - google_llm.py:210 - Sending out request, model: gemini-2.5-flash, backend: GoogleLLMVariant.GEMINI_API, stream: False
+2026-07-05 19:02:38,045 - INFO - models.py:8686 - AFC is enabled with max remote calls: 10.
+2026-07-05 19:02:43,840 - INFO - _client.py:1740 - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-07-05 19:02:43,844 - INFO - google_llm.py:279 - Response received from the model.
+2026-07-05 19:02:48,874 - INFO - google_llm.py:210 - Sending out request, model: gemini-2.5-flash, backend: GoogleLLMVariant.GEMINI_API, stream: False
+2026-07-05 19:02:48,875 - INFO - models.py:8686 - AFC is enabled with max remote calls: 10.
+2026-07-05 19:02:56,642 - INFO - _client.py:1740 - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-07-05 19:02:56,645 - INFO - google_llm.py:279 - Response received from the model.
+2026-07-05 19:03:01,943 - INFO - google_llm.py:210 - Sending out request, model: gemini-2.5-flash, backend: GoogleLLMVariant.GEMINI_API, stream: False
+2026-07-05 19:03:01,944 - INFO - models.py:8686 - AFC is enabled with max remote calls: 10.
+2026-07-05 19:03:12,589 - INFO - _client.py:1740 - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-07-05 19:03:12,592 - INFO - google_llm.py:279 - Response received from the model.
+2026-07-05 19:03:17,762 - INFO - google_llm.py:210 - Sending out request, model: gemini-2.5-flash, backend: GoogleLLMVariant.GEMINI_API, stream: False
+2026-07-05 19:03:17,764 - INFO - models.py:8686 - AFC is enabled with max remote calls: 10.
+2026-07-05 19:03:28,488 - INFO - _client.py:1740 - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-07-05 19:03:28,491 - INFO - google_llm.py:279 - Response received from the model.
+2026-07-05 19:03:33,675 - INFO - google_llm.py:210 - Sending out request, model: gemini-2.5-flash, backend: GoogleLLMVariant.GEMINI_API, stream: False
+2026-07-05 19:03:33,676 - INFO - models.py:8686 - AFC is enabled with max remote calls: 10.
+2026-07-05 19:03:42,314 - INFO - _client.py:1740 - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-07-05 19:03:42,317 - INFO - google_llm.py:279 - Response received from the model.
+2026-07-05 19:03:42,382 - INFO - tools.py:188 - Mock published to twitter: https://twitter.com/mock_post_id
+2026-07-05 19:03:42,382 - INFO - tools.py:188 - Mock published to linkedin: https://linkedin.com/mock_post_id
+2026-07-05 19:03:42,382 - INFO - tools.py:188 - Mock published to instagram: https://instagram.com/mock_post_id
+2026-07-05 19:03:43,419 - INFO - _client.py:1740 - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-001:batchEmbedContents "HTTP/1.1 200 OK"
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2026-07-05 19:03:43,630 - INFO - runners.py:2115 - Closing runner...
+2026-07-05 19:03:43,630 - INFO - runners.py:2128 - Runner closed.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [53997]

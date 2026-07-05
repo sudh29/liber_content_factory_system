@@ -22,3 +22,18 @@ dist-frontend/
 
 # OS-specific files
 .DS_Store
+
+# Runtime Data
+output/
+audit_logs/
+*.db
+.adk/
+
+# CLI & IDE
+.google-agents-cli/
+deployment_metadata.json
+
+# Build
+.vite/
+dist/
+uv.lock
