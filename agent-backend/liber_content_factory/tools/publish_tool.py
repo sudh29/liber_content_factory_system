@@ -12,6 +12,7 @@ from google import genai
 from google.adk.tools import ToolContext
 
 from liber_content_factory.config.constants import HISTORY_FILE, OUTPUT_DIR
+from liber_content_factory.repositories.storage_repo import get_storage_repository
 
 logger = logging.getLogger(__name__)
 
@@ -40,11 +41,8 @@ async def publish_content_tool(tool_context: ToolContext) -> dict:
     if selected_item and "raw_content" in selected_item:
         raw_content = selected_item["raw_content"]
         try:
-            OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-            history = []
-            if HISTORY_FILE.exists():
-                with open(HISTORY_FILE, "r") as f:
-                    history = json.load(f)
+            repo = get_storage_repository()
+            history = repo.load_history(file_override=HISTORY_FILE)
 
             client = genai.Client()
             embedding = None
@@ -67,8 +65,7 @@ async def publish_content_tool(tool_context: ToolContext) -> dict:
                 history_entry["embedding"] = embedding
 
             history.append(history_entry)
-            with open(HISTORY_FILE, "w") as f:
-                json.dump(history, f, indent=2)
+            repo.save_history(history, file_override=HISTORY_FILE)
         except Exception as e:
             logger.warning(f"Failed to update history file: {e}")
 

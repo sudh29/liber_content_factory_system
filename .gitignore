@@ -25,6 +25,8 @@ dist-frontend/
 
 # Runtime Data
 output/
+data/
+quotes_db.json
 audit_logs/
 *.db
 *.log
