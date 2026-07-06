@@ -1,7 +1,7 @@
 // api/adkClient.ts
 // Wraps ADK endpoints for running agents and managing sessions
 
-const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
 export interface RunAgentRequest {
     session_id?: string;
