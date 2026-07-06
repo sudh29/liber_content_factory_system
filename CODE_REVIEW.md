@@ -2,6 +2,7 @@
 
 **Project Name:** Liber Content Factory System  
 **Repository:** `github.com/sudh29/liber_content_factory_system`  
+**Video Walkthrough:** [https://www.youtube.com/watch?v=iAzrd1AmMMg](https://www.youtube.com/watch?v=iAzrd1AmMMg)  
 **Review Date:** July 6, 2026  
 **Reviewer:** Senior Software Engineer, Software Architect, & Code Reviewer  
 **Evaluation Methodology:** Industry-standard production engineering criteria, Google ADK best practices, SOLID principles, and enterprise security & scalability guidelines.
