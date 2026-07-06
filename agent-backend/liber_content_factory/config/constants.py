@@ -10,10 +10,12 @@ from pathlib import Path
 # Project root (agent-backend directory)
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 
-# Output paths
+# Output and Data paths
 OUTPUT_DIR = PROJECT_ROOT / "output"
+DATA_DIR = PROJECT_ROOT / "data"
 AUDIT_LOG_DIR = PROJECT_ROOT / "audit_logs"
-HISTORY_FILE = OUTPUT_DIR / "published_history.json"
+HISTORY_FILE = DATA_DIR / "published_history.json"
+QUOTES_DB_FILE = DATA_DIR / "quotes_db.json"
 MEDIA_OUTPUT_DIR = OUTPUT_DIR / "media"
 
 # Duplicate detection

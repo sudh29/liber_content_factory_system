@@ -1,0 +1,71 @@
+[
+  {
+    "id": "cdda758f-e6e7-4dc7-96d5-1d2278274f79",
+    "text": "I have no special talent. I am only passionately curious.",
+    "author": "Albert Einstein",
+    "category": "Science",
+    "status": "Published",
+    "publishedPlatforms": [
+      "telegram"
+    ],
+    "publishedTime": "2026-07-06T10:00:18.304561Z"
+  },
+  {
+    "id": "e0e075df-d510-4f4f-a8bb-5e82911703f5",
+    "text": "Do not go where the path may lead, go instead where there is no path and leave a trail.",
+    "author": "Ralph Waldo Emerson",
+    "category": "Philosophy"
+  },
+  {
+    "id": "37f882fb-8f1f-41ea-a12f-605801fddd35",
+    "text": "Science is not only a disciple of reason but, also, one of romance and passion.",
+    "author": "Stephen Hawking",
+    "category": "Science"
+  },
+  {
+    "id": "69c433da-0765-49ce-954c-78c95bfa5949",
+    "text": "The best way to predict the future is to invent it.",
+    "author": "Alan Kay",
+    "category": "Technology"
+  },
+  {
+    "id": "q_1783331194621",
+    "text": "The mind is not a vessel to be filled, but a fire to be kindled.",
+    "author": "Plutarch",
+    "category": "Philosophy",
+    "type": "Quote",
+    "status": "Unpublished",
+    "source": "On Listening to Lectures"
+  },
+  {
+    "id": "q_1783331652960",
+    "text": "There is nothing like looking, if you want to find something. You certainly usually find something, if you look, but it is not always quite the something you were after.",
+    "author": "J.R.R. Tolkien",
+    "category": "Inspiration",
+    "type": "Quote",
+    "status": "Unpublished",
+    "source": "The Hobbit"
+  },
+  {
+    "id": "q_1783331860269",
+    "text": "That brain of mine is something more than merely mortal; as time will show.",
+    "author": "Ada Lovelace",
+    "category": "Technology",
+    "type": "Quote",
+    "status": "Unpublished",
+    "source": "Letter to Charles Babbage (1843)"
+  },
+  {
+    "id": "q_1783334288314",
+    "text": "Be yourself; everyone else is already taken.",
+    "author": "Oscar Wilde",
+    "category": "Motivation",
+    "type": "Quote",
+    "status": "Published",
+    "source": "Attributed Wilde Anecdotes",
+    "publishedPlatforms": [
+      "telegram"
+    ],
+    "publishedTime": "2026-07-06T10:38:23.033950Z"
+  }
+]

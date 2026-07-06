@@ -12,6 +12,7 @@ from google import genai
 from google.adk.tools import ToolContext
 
 from liber_content_factory.config.constants import HISTORY_FILE, SIMILARITY_THRESHOLD
+from liber_content_factory.repositories.storage_repo import get_storage_repository
 
 logger = logging.getLogger(__name__)
 
@@ -28,18 +29,11 @@ async def filter_duplicates_tool(tool_context: ToolContext) -> dict:
         logger.info("No candidates found in state.")
         return {"status": "success", "message": "No candidates to filter."}
 
-    if not HISTORY_FILE.exists():
-        logger.info("No history file found. Skipping duplicate detection.")
-        return {"status": "success", "message": "No history file found."}
-
-    try:
-        with open(HISTORY_FILE, "r") as f:
-            history = json.load(f)
-    except Exception as e:
-        logger.warning(f"Failed to read history file: {e}")
-        history = []
+    repo = get_storage_repository()
+    history = repo.load_history(file_override=HISTORY_FILE)
 
     if not history:
+        logger.info("History is empty or not found. Skipping duplicate detection.")
         return {"status": "success", "message": "History is empty."}
 
     client = genai.Client()
@@ -55,8 +49,7 @@ async def filter_duplicates_tool(tool_context: ToolContext) -> dict:
             )
             for idx, emb in zip(missing_indices, embed_response.embeddings):
                 history[idx]["embedding"] = emb.values
-            with open(HISTORY_FILE, "w") as f:
-                json.dump(history, f, indent=2)
+            repo.save_history(history, file_override=HISTORY_FILE)
         except Exception as e:
             logger.warning(f"Failed to backfill history embeddings: {e}")
 

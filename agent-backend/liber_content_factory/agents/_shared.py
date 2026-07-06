@@ -16,5 +16,5 @@ load_dotenv(Path(__file__).resolve().parents[2] / ".env")
 
 gemini_model = Gemini(
     model=os.environ["GEMINI_MODEL"],
-    retry_options=types.HttpRetryOptions(initial_delay=30, attempts=3)
+    retry_options=types.HttpRetryOptions(initial_delay=1, attempts=1)
 )
