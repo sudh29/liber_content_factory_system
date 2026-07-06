@@ -115,8 +115,8 @@ def generate_fallback_content(prompt_text: str, quote: dict, strategy_name: str 
     except ClientError as exc:
         logger.warning("Gemini quota exhausted in fallback generation: %s", exc)
         fallback_draft = (
-            f"I’m temporarily unable to generate the full draft because the Gemini service is rate-limited. "
-            f"Please try again shortly."
+            "I’m temporarily unable to generate the full draft because the Gemini service is rate-limited. "
+            "Please try again shortly."
         )
         return {
             "draft": fallback_draft,

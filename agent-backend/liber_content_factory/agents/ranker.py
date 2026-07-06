@@ -1,3 +1,5 @@
+import logging
+logger = logging.getLogger(__name__)
 """
 Ranker Agent — Candidate Scoring.
 
@@ -6,7 +8,6 @@ based on strategy-defined ranking criteria. Selects the top-scoring
 item as the chosen candidate.
 """
 
-import asyncio
 
 from google.adk.agents import Agent
 from google.adk.agents.callback_context import CallbackContext
@@ -35,7 +36,7 @@ Candidates:
 # --- Callbacks ---
 
 async def prepare_ranker_input(callback_context: CallbackContext) -> None:
-    await asyncio.sleep(5.0)
+    pass
     candidates = callback_context.state.get("candidate_items", [])
     text = "\n".join([f"{i+1}. {c.get('raw_content')}" for i, c in enumerate(candidates)])
     callback_context.state["candidates_text"] = text
@@ -62,6 +63,7 @@ async def process_ranking(callback_context: CallbackContext) -> None:
         for i, s in enumerate(scores):
             candidates[i]["score"] = s
     else:
+        logger.warning(f"Ranker scores length mismatch: got {len(scores)} scores for {len(candidates)} candidates. Falling back to default score 1.0.")
         for c in candidates:
             c["score"] = 1.0
 

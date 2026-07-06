@@ -7,7 +7,6 @@ Handles /api/credentials and /api/logs endpoints.
 import os
 import json
 import logging
-from pathlib import Path
 from http.server import BaseHTTPRequestHandler
 
 from liber_content_factory.config.constants import AUDIT_LOG_DIR

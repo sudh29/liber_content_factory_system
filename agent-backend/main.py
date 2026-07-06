@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 
 async def generate_content(strategy_name: str, topic: str):
     """Run the ADK pipeline to generate content for the given topic."""
-    config = load_config()
+    load_config()
     logger.info(f"Generating '{strategy_name}' content for topic: {topic}")
 
     session_service = InMemorySessionService()
