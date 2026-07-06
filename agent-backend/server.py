@@ -7,7 +7,7 @@ liber_content_factory.api package.
 
 import logging
 import json
-from http.server import HTTPServer, BaseHTTPRequestHandler
+from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 from urllib.parse import urlparse
 
 # Configure structured logging
@@ -53,15 +53,12 @@ class QuoteAPIHandler(BaseHTTPRequestHandler):
         
         try:
             if parsed_path.path == '/api/quotes':
-                self._set_cors_headers()
                 get_quotes(self)
                 
             elif parsed_path.path == '/api/credentials':
-                self._set_cors_headers()
                 handle_credentials(self)
                 
             elif parsed_path.path == '/api/logs':
-                self._set_cors_headers()
                 handle_logs(self)
                 
             else:
@@ -85,15 +82,12 @@ class QuoteAPIHandler(BaseHTTPRequestHandler):
         
         try:
             if parsed_path.path == '/api/quotes':
-                self._set_cors_headers()
                 post_quote(self, post_data)
                 
             elif parsed_path.path == '/api/generate':
-                self._set_cors_headers()
                 handle_generate(self, post_data)
                 
             elif parsed_path.path == '/api/publish':
-                self._set_cors_headers()
                 handle_publish(self, post_data)
                 
             else:
@@ -118,7 +112,6 @@ class QuoteAPIHandler(BaseHTTPRequestHandler):
         try:
             if parsed_path.path.startswith('/api/quotes/'):
                 quote_id = parsed_path.path.split('/')[-1]
-                self._set_cors_headers()
                 put_quote(self, post_data, quote_id)
             else:
                 self.send_response(404)
@@ -139,7 +132,6 @@ class QuoteAPIHandler(BaseHTTPRequestHandler):
         try:
             if parsed_path.path.startswith('/api/quotes/'):
                 quote_id = parsed_path.path.split('/')[-1]
-                self._set_cors_headers()
                 delete_quote(self, quote_id)
             else:
                 self.send_response(404)
@@ -157,7 +149,7 @@ class QuoteAPIHandler(BaseHTTPRequestHandler):
 def run_server(port=8000):
     """Starts the HTTP server."""
     server_address = ('', port)
-    httpd = HTTPServer(server_address, QuoteAPIHandler)
+    httpd = ThreadingHTTPServer(server_address, QuoteAPIHandler)
     logger.info(f"Starting server on port {port}...")
     try:
         httpd.serve_forever()

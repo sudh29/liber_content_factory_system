@@ -4,6 +4,7 @@ Content generation and CRUD routes.
 Handles /api/generate and /api/quotes HTTP endpoints.
 """
 
+import asyncio
 import json
 import uuid
 import time
@@ -11,11 +12,12 @@ import logging
 from urllib.parse import urlparse, parse_qs
 from http.server import BaseHTTPRequestHandler
 
-from google.adk.sessions import Session
+from google.adk.runners import Runner
+from google.adk.sessions.in_memory_session_service import InMemorySessionService
+from google.genai import types
 
 from liber_content_factory.api.storage import QUOTES_DB_FILE, read_json_file, write_json_file
 from liber_content_factory.services.fallback import generate_fallback_content
-from liber_content_factory.config.constants import OUTPUT_DIR, HISTORY_FILE
 from liber_content_factory.agents.pipeline import app as adk_app
 
 logger = logging.getLogger(__name__)
@@ -33,6 +35,9 @@ def get_quotes(handler: BaseHTTPRequestHandler) -> None:
         quotes = [q for q in quotes if q.get('category', '').lower() == category.lower()]
         
     handler.send_response(200)
+    handler.send_header('Access-Control-Allow-Origin', '*')
+    handler.send_header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+    handler.send_header('Access-Control-Allow-Headers', 'Content-Type, Authorization')
     handler.send_header('Content-type', 'application/json')
     handler.end_headers()
     handler.wfile.write(json.dumps({"quotes": quotes}).encode())
@@ -44,6 +49,9 @@ def post_quote(handler: BaseHTTPRequestHandler, post_data: str) -> None:
         data = json.loads(post_data)
         if not data.get('text') or not data.get('author'):
             handler.send_response(400)
+            handler.send_header('Access-Control-Allow-Origin', '*')
+            handler.send_header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+            handler.send_header('Access-Control-Allow-Headers', 'Content-Type, Authorization')
             handler.send_header('Content-type', 'application/json')
             handler.end_headers()
             handler.wfile.write(json.dumps({"error": "Missing text or author"}).encode())
@@ -62,16 +70,25 @@ def post_quote(handler: BaseHTTPRequestHandler, post_data: str) -> None:
         
         if write_json_file(QUOTES_DB_FILE, quotes):
             handler.send_response(201)
+            handler.send_header('Access-Control-Allow-Origin', '*')
+            handler.send_header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+            handler.send_header('Access-Control-Allow-Headers', 'Content-Type, Authorization')
             handler.send_header('Content-type', 'application/json')
             handler.end_headers()
             handler.wfile.write(json.dumps(new_quote).encode())
         else:
             handler.send_response(500)
+            handler.send_header('Access-Control-Allow-Origin', '*')
+            handler.send_header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+            handler.send_header('Access-Control-Allow-Headers', 'Content-Type, Authorization')
             handler.send_header('Content-type', 'application/json')
             handler.end_headers()
             handler.wfile.write(json.dumps({"error": "Failed to save quote"}).encode())
     except json.JSONDecodeError:
         handler.send_response(400)
+        handler.send_header('Access-Control-Allow-Origin', '*')
+        handler.send_header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+        handler.send_header('Access-Control-Allow-Headers', 'Content-Type, Authorization')
         handler.send_header('Content-type', 'application/json')
         handler.end_headers()
         handler.wfile.write(json.dumps({"error": "Invalid JSON"}).encode())
@@ -99,21 +116,33 @@ def put_quote(handler: BaseHTTPRequestHandler, post_data: str, quote_id: str) ->
                 
         if updated and write_json_file(QUOTES_DB_FILE, quotes):
             handler.send_response(200)
+            handler.send_header('Access-Control-Allow-Origin', '*')
+            handler.send_header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+            handler.send_header('Access-Control-Allow-Headers', 'Content-Type, Authorization')
             handler.send_header('Content-type', 'application/json')
             handler.end_headers()
             handler.wfile.write(json.dumps(updated_quote).encode())
         elif not updated:
             handler.send_response(404)
+            handler.send_header('Access-Control-Allow-Origin', '*')
+            handler.send_header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+            handler.send_header('Access-Control-Allow-Headers', 'Content-Type, Authorization')
             handler.send_header('Content-type', 'application/json')
             handler.end_headers()
             handler.wfile.write(json.dumps({"error": "Quote not found"}).encode())
         else:
             handler.send_response(500)
+            handler.send_header('Access-Control-Allow-Origin', '*')
+            handler.send_header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+            handler.send_header('Access-Control-Allow-Headers', 'Content-Type, Authorization')
             handler.send_header('Content-type', 'application/json')
             handler.end_headers()
             handler.wfile.write(json.dumps({"error": "Failed to save quote"}).encode())
     except json.JSONDecodeError:
         handler.send_response(400)
+        handler.send_header('Access-Control-Allow-Origin', '*')
+        handler.send_header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+        handler.send_header('Access-Control-Allow-Headers', 'Content-Type, Authorization')
         handler.send_header('Content-type', 'application/json')
         handler.end_headers()
         handler.wfile.write(json.dumps({"error": "Invalid JSON"}).encode())
@@ -129,16 +158,25 @@ def delete_quote(handler: BaseHTTPRequestHandler, quote_id: str) -> None:
     if len(quotes) < initial_length:
         if write_json_file(QUOTES_DB_FILE, quotes):
             handler.send_response(200)
+            handler.send_header('Access-Control-Allow-Origin', '*')
+            handler.send_header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+            handler.send_header('Access-Control-Allow-Headers', 'Content-Type, Authorization')
             handler.send_header('Content-type', 'application/json')
             handler.end_headers()
             handler.wfile.write(json.dumps({"success": True}).encode())
         else:
             handler.send_response(500)
+            handler.send_header('Access-Control-Allow-Origin', '*')
+            handler.send_header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+            handler.send_header('Access-Control-Allow-Headers', 'Content-Type, Authorization')
             handler.send_header('Content-type', 'application/json')
             handler.end_headers()
             handler.wfile.write(json.dumps({"error": "Failed to save database"}).encode())
     else:
         handler.send_response(404)
+        handler.send_header('Access-Control-Allow-Origin', '*')
+        handler.send_header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+        handler.send_header('Access-Control-Allow-Headers', 'Content-Type, Authorization')
         handler.send_header('Content-type', 'application/json')
         handler.end_headers()
         handler.wfile.write(json.dumps({"error": "Quote not found"}).encode())
@@ -159,8 +197,10 @@ def handle_generate(handler: BaseHTTPRequestHandler, post_data: str) -> None:
         if not quote:
             quotes = read_json_file(QUOTES_DB_FILE)
             if not quotes:
-                from liber_content_factory.config.constants import DEFAULT_QUOTES
-                quote = DEFAULT_QUOTES[0]
+                quote = {
+                    "text": prompt_text or "A thoughtful quote about creativity and growth",
+                    "author": "Liber AI"
+                }
             else:
                 import random
                 quote = random.choice(quotes)
@@ -168,25 +208,45 @@ def handle_generate(handler: BaseHTTPRequestHandler, post_data: str) -> None:
         if simulate:
             result = generate_fallback_content(prompt_text, quote, strategy_name)
         else:
-            session = Session()
-            if strategy_name:
-                session.state["strategy_name"] = strategy_name
+            session_service = InMemorySessionService()
+            user_id = "api-user"
+            session_id = f"api-session-{uuid.uuid4().hex[:8]}"
+            app_name = "content-factory-api"
 
-            # Run the ADK pipeline synchronously using asyncio loop runner
-            import asyncio
+            asyncio.run(session_service.create_session(
+                app_name=app_name,
+                user_id=user_id,
+                session_id=session_id,
+            ))
+
+            runner = Runner(
+                app=adk_app,
+                app_name=app_name,
+                session_service=session_service,
+            )
+
             async def run_app():
-                events = []
                 input_query = f"Prompt: {prompt_text}\nQuote: {quote['text']} - {quote['author']}"
-                async for event in adk_app.run_async(session, input_query):
+                new_message = types.Content(
+                    role="user",
+                    parts=[types.Part(text=input_query)],
+                )
+                events = []
+                async for event in runner.run_async(
+                    user_id=user_id,
+                    session_id=session_id,
+                    new_message=new_message,
+                    state_delta={"strategy_name": strategy_name},
+                ):
                     events.append(event)
-                return events, session
-                
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-            try:
-                events, session = loop.run_until_complete(run_app())
-            finally:
-                loop.close()
+                return events
+
+            asyncio.run(run_app())
+            session = asyncio.run(session_service.get_session(
+                app_name=app_name,
+                user_id=user_id,
+                session_id=session_id,
+            ))
 
             draft = session.state.get("draft", "")
             formatted = session.state.get("formatted_content", {})
@@ -202,22 +262,32 @@ def handle_generate(handler: BaseHTTPRequestHandler, post_data: str) -> None:
                     "cost": 0.0
                 },
                 "platforms": list(formatted.keys()),
-                "media": media
+                "media": media,
+                "session_id": session_id
             }
             
         handler.send_response(200)
+        handler.send_header('Access-Control-Allow-Origin', '*')
+        handler.send_header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+        handler.send_header('Access-Control-Allow-Headers', 'Content-Type, Authorization')
         handler.send_header('Content-type', 'application/json')
         handler.end_headers()
         handler.wfile.write(json.dumps(result).encode())
         
     except json.JSONDecodeError:
         handler.send_response(400)
+        handler.send_header('Access-Control-Allow-Origin', '*')
+        handler.send_header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+        handler.send_header('Access-Control-Allow-Headers', 'Content-Type, Authorization')
         handler.send_header('Content-type', 'application/json')
         handler.end_headers()
         handler.wfile.write(json.dumps({"error": "Invalid JSON payload"}).encode())
     except Exception as e:
         logger.error(f"Generation error: {e}", exc_info=True)
         handler.send_response(500)
+        handler.send_header('Access-Control-Allow-Origin', '*')
+        handler.send_header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+        handler.send_header('Access-Control-Allow-Headers', 'Content-Type, Authorization')
         handler.send_header('Content-type', 'application/json')
         handler.end_headers()
         handler.wfile.write(json.dumps({"error": f"Generation failed: {str(e)}"}).encode())

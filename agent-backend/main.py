@@ -7,9 +7,10 @@ Allows running content generation manually from the CLI without starting the HTT
 import argparse
 import asyncio
 import logging
-from pprint import pprint
 
-from google.adk.sessions import Session
+from google.adk.runners import Runner
+from google.adk.sessions.in_memory_session_service import InMemorySessionService
+from google.genai import types
 
 from liber_content_factory.config.settings import load_config
 from liber_content_factory.strategies import list_strategies
@@ -24,25 +25,49 @@ logger = logging.getLogger(__name__)
 
 async def generate_content(strategy_name: str, topic: str):
     """Run the ADK pipeline to generate content for the given topic."""
-    config = load_config()
+    load_config()
     logger.info(f"Generating '{strategy_name}' content for topic: {topic}")
 
-    session = Session(
-        id="cli-session",
-        appName="content-factory-cli",
-        userId="cli-user",
+    session_service = InMemorySessionService()
+    user_id = "cli-user"
+    session_id = "cli-session"
+    app_name = "content-factory-cli"
+
+    await session_service.create_session(
+        app_name=app_name,
+        user_id=user_id,
+        session_id=session_id,
     )
-    session.state["strategy_name"] = strategy_name
+
+    runner = Runner(
+        app=pipeline_app,
+        app_name=app_name,
+        session_service=session_service,
+    )
 
     async with tracing_scope():
-        # The input query format expected by the RootAgent
         input_query = f"Topic/Prompt: {topic}"
-        
+        new_message = types.Content(
+            role="user",
+            parts=[types.Part(text=input_query)],
+        )
+
         events = []
-        async for event in pipeline_app.run_async(session, input_query):
+        async for event in runner.run_async(
+            user_id=user_id,
+            session_id=session_id,
+            new_message=new_message,
+            state_delta={"strategy_name": strategy_name},
+        ):
             events.append(event)
             if hasattr(event, 'actions') and event.actions.state_delta:
                 logger.debug(f"State updated by {event.author}")
+
+    session = await session_service.get_session(
+        app_name=app_name,
+        user_id=user_id,
+        session_id=session_id,
+    )
 
     print("\n" + "="*50)
     print("✨ GENERATION COMPLETE ✨")

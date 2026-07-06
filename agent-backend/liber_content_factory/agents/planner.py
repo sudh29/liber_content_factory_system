@@ -5,7 +5,6 @@ Generates 5 diverse candidate content ideas/themes using the strategy's
 discovery prompt. Parses the structured output into candidate_items state.
 """
 
-import asyncio
 
 from google.adk.agents import Agent
 from google.adk.agents.callback_context import CallbackContext
@@ -34,7 +33,9 @@ Format the output strictly as JSON following the DiscoverySchema.""",
 # --- Callbacks ---
 
 async def prepare_planner_input(callback_context: CallbackContext) -> None:
-    await asyncio.sleep(5.0)
+    from liber_content_factory.security.guardrails import validate_input_safety
+    validate_input_safety(callback_context.state)
+
 
 planner_agent.before_agent_callback = prepare_planner_input
 

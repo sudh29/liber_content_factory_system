@@ -7,7 +7,7 @@ from google.adk.models import Gemini
 from google.adk.models.llm_response import LlmResponse
 from google.genai import types
 
-from app.agent import app
+from liber_content_factory.agents.pipeline import app
 
 # --- Mock Response Generator ---
 
@@ -106,10 +106,16 @@ async def test_adk_pipeline_execution(tmp_path):
     with open(mock_history_path, "w") as f:
         json.dump([history_entry], f)
 
-    # Patch inside app.tools namespace for the genai.Client
+    from pathlib import Path
+    mock_history_path_obj = Path(mock_history_path)
+
+    # Patch inside tool namespace for the genai.Client
     with patch.object(Gemini, "generate_content_async", mock_generate_content_async), \
-         patch("app.tools.genai.Client", MockGenaiClient), \
-         patch("app.tools.HISTORY_FILE", mock_history_path):
+         patch("liber_content_factory.tools.publish_tool.genai.Client", MockGenaiClient), \
+         patch("liber_content_factory.tools.dedup_tool.genai.Client", MockGenaiClient), \
+         patch("liber_content_factory.tools.publish_tool.HISTORY_FILE", mock_history_path_obj), \
+         patch("liber_content_factory.tools.dedup_tool.HISTORY_FILE", mock_history_path_obj), \
+         patch.dict("os.environ", {"PUBLISH_DRY_RUN": "true"}):
          
         runner = InMemoryRunner(agent=app.root_agent, app_name="app")
         await runner.session_service.create_session(app_name="app", user_id="user", session_id="s1")

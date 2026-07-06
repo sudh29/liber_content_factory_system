@@ -5,7 +5,6 @@ Evaluates the generated draft against strategy-defined validation criteria.
 Sets validation_passed and revision_feedback in state for the refinement loop.
 """
 
-import asyncio
 
 from google.adk.agents import Agent
 from google.adk.agents.callback_context import CallbackContext
@@ -36,7 +35,7 @@ If it fails any of these criteria, mark passed as false and provide specific fee
 # --- Callbacks ---
 
 async def prepare_validator_input(callback_context: CallbackContext) -> None:
-    await asyncio.sleep(5.0)
+    pass
 
 validator_agent.before_agent_callback = prepare_validator_input
 
@@ -56,5 +55,10 @@ async def process_validation(callback_context: CallbackContext) -> None:
             callback_context.state["revision_feedback"] = feedback
         else:
             callback_context.state["revision_feedback"] = ""
+
+        # Security output safety check
+        from liber_content_factory.security.guardrails import validate_output_safety
+        draft = callback_context.state.get("draft", "")
+        validate_output_safety(draft)
 
 validator_agent.after_agent_callback = process_validation

@@ -10,8 +10,10 @@ export function useContent() {
     try {
       const res = await fetch('/api/quotes');
       if (!res.ok) throw new Error("API failed");
-      const data = await res.json() as Quote[];
-      setQuotesState(data);
+      const payload = await res.json();
+      // Backend returns { quotes: [...] } while local code expects an array.
+      const data = Array.isArray(payload) ? payload : (Array.isArray(payload.quotes) ? payload.quotes : []);
+      setQuotesState(data as Quote[]);
       localStorage.setItem('quotes_repository', JSON.stringify(data));
     } catch (err) {
       console.warn("Backend API offline/error. Loading from localStorage cache.");
