@@ -5,7 +5,6 @@ Conducts web research using Google Search to find interesting facts,
 context, or background information related to the selected content item.
 """
 
-import asyncio
 
 from google.adk.agents import Agent
 from google.adk.agents.callback_context import CallbackContext
@@ -28,7 +27,7 @@ researcher_agent = Agent(
 # --- Callbacks ---
 
 async def prepare_researcher_input(callback_context: CallbackContext) -> None:
-    await asyncio.sleep(5.0)
+    pass
     selected = callback_context.state.get("selected_item", {})
     callback_context.state["selected_raw_content"] = selected.get("raw_content", "")
 

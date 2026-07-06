@@ -22,7 +22,7 @@ def publish_to_webhook(quote: dict, webhook_url: str, platforms: list[str], quot
     Returns:
         List of audit logs generated during this operation.
     """
-    logs = []
+    logs: list[dict[str, str]] = []
     if not webhook_url:
         return logs
 
@@ -43,7 +43,7 @@ def publish_to_webhook(quote: dict, webhook_url: str, platforms: list[str], quot
             method='POST'
         )
 
-        with urllib.request.urlopen(req) as response:
+        with urllib.request.urlopen(req):
             pass  # consume response
 
         logs.append({
@@ -77,7 +77,7 @@ def publish_to_slack(quote: dict, slack_webhook_url: str, platforms: list[str], 
     Returns:
         List of audit logs generated during this operation.
     """
-    logs = []
+    logs: list[dict[str, str]] = []
     if not slack_webhook_url:
         return logs
 
@@ -93,14 +93,14 @@ def publish_to_slack(quote: dict, slack_webhook_url: str, platforms: list[str], 
             method='POST'
         )
 
-        with urllib.request.urlopen(req) as response:
+        with urllib.request.urlopen(req):
             pass
 
         logs.append({
             "id": f"log_slack_{int(time.time() * 1000)}",
             "timestamp": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
             "type": "SUCCESS",
-            "message": f"Slack Integration: Transmitted notification payload successfully to webhook channel.",
+            "message": "Slack Integration: Transmitted notification payload successfully to webhook channel.",
             "quoteId": quote_id
         })
     except Exception as slack_err:

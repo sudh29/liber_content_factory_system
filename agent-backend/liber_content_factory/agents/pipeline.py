@@ -7,7 +7,7 @@ the ADK App entry point.
 """
 
 import logging
-from typing import AsyncGenerator
+from typing import AsyncGenerator, Any
 
 from google.adk.agents import SequentialAgent, BaseAgent
 from google.adk.agents.callback_context import CallbackContext
@@ -40,7 +40,7 @@ async def init_pipeline_state(callback_context: CallbackContext) -> None:
     from liber_content_factory.strategies.generic import GenericContentStrategy
 
     if strategy_name == "quotes":
-        strategy = DailyQuoteStrategy()
+        strategy: Any = DailyQuoteStrategy()
         callback_context.state["generation_prompt"] = (
             "Provide:\n1. A meaningful explanation of the quote.\n2. Practical life lessons.\n3. Suggested hashtags.\n4. Strong Call-To-Action (CTA)."
         )

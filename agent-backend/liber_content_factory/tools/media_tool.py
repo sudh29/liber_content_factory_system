@@ -6,7 +6,7 @@ Generates a media asset for the draft using OpenAI DALL-E or a PNG fallback.
 
 import os
 import logging
-import requests
+import requests  # type: ignore
 import asyncio
 from google.adk.tools import ToolContext
 

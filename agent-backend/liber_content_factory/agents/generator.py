@@ -6,7 +6,6 @@ research data, and selected candidate. Supports revision feedback from
 the validation loop.
 """
 
-import asyncio
 
 from google.adk.agents import Agent
 from google.adk.agents.callback_context import CallbackContext
@@ -37,7 +36,7 @@ Candidate Content:
 # --- Callbacks ---
 
 async def prepare_generator_input(callback_context: CallbackContext) -> None:
-    await asyncio.sleep(5.0)
+    pass
     feedback = callback_context.state.get("revision_feedback")
     if feedback:
         callback_context.state["revision_feedback_instruction"] = (

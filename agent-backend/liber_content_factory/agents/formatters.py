@@ -6,10 +6,9 @@ the draft for each platform's conventions, plus a ConsolidationAgent that
 collects all formatted outputs into a single state dictionary.
 """
 
-import asyncio
 from typing import AsyncGenerator
 
-from google.adk.agents import Agent, BaseAgent, SequentialAgent
+from google.adk.agents import Agent, BaseAgent, ParallelAgent
 from google.adk.agents.callback_context import CallbackContext
 from google.adk.agents.invocation_context import InvocationContext
 from google.adk.events import Event, EventActions
@@ -33,7 +32,7 @@ Platform Rules:
 
 
 async def prepare_twitter_formatter_input(callback_context: CallbackContext) -> None:
-    await asyncio.sleep(5.0)
+    pass
 
 twitter_formatter.before_agent_callback = prepare_twitter_formatter_input
 
@@ -54,7 +53,7 @@ Platform Rules:
 
 
 async def prepare_linkedin_formatter_input(callback_context: CallbackContext) -> None:
-    await asyncio.sleep(5.0)
+    pass
 
 linkedin_formatter.before_agent_callback = prepare_linkedin_formatter_input
 
@@ -75,14 +74,14 @@ Platform Rules:
 
 
 async def prepare_instagram_formatter_input(callback_context: CallbackContext) -> None:
-    await asyncio.sleep(5.0)
+    pass
 
 instagram_formatter.before_agent_callback = prepare_instagram_formatter_input
 
 
 # --- Sequential Formatter Chain ---
 
-formatters = SequentialAgent(
+formatters = ParallelAgent(
     name="formatters",
     sub_agents=[twitter_formatter, linkedin_formatter, instagram_formatter]
 )

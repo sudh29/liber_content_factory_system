@@ -21,17 +21,18 @@ def handle_publish(handler: BaseHTTPRequestHandler, post_data: str) -> None:
     """Handles POST /api/publish."""
     try:
         data = json.loads(post_data)
-        content = data.get('content', {})
+        data.get('content', {})
         quote = data.get('quote', {})
         platforms = data.get('platforms', [])
         
         quote_id = quote.get('id', str(uuid.uuid4()))
-        results = {"success": True, "publishedTo": [], "logs": []}
+        from typing import Any
+        results: dict[str, Any] = {"success": True, "publishedTo": [], "logs": []}
         
         # Telegram
         if 'Telegram' in platforms:
-            bot_token = os.environ.get('TELEGRAM_BOT_TOKEN')
-            chat_id = os.environ.get('TELEGRAM_CHAT_ID')
+            bot_token = os.environ.get('TELEGRAM_BOT_TOKEN', '')
+            chat_id = os.environ.get('TELEGRAM_CHAT_ID', '')
             logs = publish_to_telegram(quote, bot_token, chat_id, quote_id)
             results["logs"].extend(logs)
             if any(l["type"] == "SUCCESS" for l in logs):
@@ -39,9 +40,9 @@ def handle_publish(handler: BaseHTTPRequestHandler, post_data: str) -> None:
                 
         # WhatsApp (WAHA)
         if 'WhatsApp' in platforms:
-            waha_api = os.environ.get('WAHA_API_URL')
+            waha_api = os.environ.get('WAHA_API_URL', '')
             waha_session = os.environ.get('WAHA_SESSION', 'default')
-            waha_key = os.environ.get('WAHA_API_KEY')
+            waha_key = os.environ.get('WAHA_API_KEY', '')
             logs = publish_to_whatsapp(quote, waha_api, waha_session, waha_key, quote_id)
             results["logs"].extend(logs)
             if any(l["type"] == "SUCCESS" for l in logs):
@@ -49,7 +50,7 @@ def handle_publish(handler: BaseHTTPRequestHandler, post_data: str) -> None:
                 
         # Generic Webhook
         if 'Webhook' in platforms:
-            webhook_url = os.environ.get('WEBHOOK_URL')
+            webhook_url = os.environ.get('WEBHOOK_URL', '')
             logs = publish_to_webhook(quote, webhook_url, platforms, quote_id)
             results["logs"].extend(logs)
             if any(l["type"] == "SUCCESS" for l in logs):
@@ -57,7 +58,7 @@ def handle_publish(handler: BaseHTTPRequestHandler, post_data: str) -> None:
                 
         # Slack
         if 'Slack' in platforms:
-            slack_url = os.environ.get('SLACK_WEBHOOK_URL')
+            slack_url = os.environ.get('SLACK_WEBHOOK_URL', '')
             logs = publish_to_slack(quote, slack_url, platforms, quote_id)
             results["logs"].extend(logs)
             if any(l["type"] == "SUCCESS" for l in logs):

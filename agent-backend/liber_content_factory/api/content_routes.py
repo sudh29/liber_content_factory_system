@@ -18,7 +18,6 @@ from google.genai import types
 
 from liber_content_factory.api.storage import QUOTES_DB_FILE, read_json_file, write_json_file
 from liber_content_factory.services.fallback import generate_fallback_content
-from liber_content_factory.config.constants import OUTPUT_DIR, HISTORY_FILE
 from liber_content_factory.agents.pipeline import app as adk_app
 
 logger = logging.getLogger(__name__)
@@ -242,7 +241,7 @@ def handle_generate(handler: BaseHTTPRequestHandler, post_data: str) -> None:
                     events.append(event)
                 return events
 
-            events = asyncio.run(run_app())
+            asyncio.run(run_app())
             session = asyncio.run(session_service.get_session(
                 app_name=app_name,
                 user_id=user_id,
@@ -263,7 +262,8 @@ def handle_generate(handler: BaseHTTPRequestHandler, post_data: str) -> None:
                     "cost": 0.0
                 },
                 "platforms": list(formatted.keys()),
-                "media": media
+                "media": media,
+                "session_id": session_id
             }
             
         handler.send_response(200)

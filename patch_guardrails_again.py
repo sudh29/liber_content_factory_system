@@ -1,26 +1,26 @@
-"""
+new_content = """\"\"\"
 Security Guardrails for Content Factory.
 
 Input and output validation to prevent prompt injection and ensure
 generated content meets safety standards.
-"""
+\"\"\"
 
 import logging
-from typing import Any
+from typing import Dict, Any
 
 from liber_content_factory.config.constants import MAX_INPUT_LENGTH
 
 logger = logging.getLogger(__name__)
 
 class SecurityPolicyViolation(Exception):
-    """Raised when a security policy is violated."""
+    \"\"\"Raised when a security policy is violated.\"\"\"
     pass
 
 def validate_input_safety(input_data: Any) -> bool:
-    """
+    \"\"\"
     Validates input data against basic injection, size constraints, and secrets.
     Returns True if safe, raises SecurityPolicyViolation if not.
-    """
+    \"\"\"
     if input_data is None:
         raise SecurityPolicyViolation("Input is None.")
 
@@ -56,17 +56,17 @@ def validate_input_safety(input_data: Any) -> bool:
     ]
     for pattern in blocked_patterns:
         if re.search(pattern, prompt_text_lower):
-            logger.warning("Input rejected: Detected prompt injection attempt in prompt.")
+            logger.warning(f"Input rejected: Detected prompt injection attempt in prompt.")
             raise SecurityPolicyViolation("Detected prompt injection attempt.")
 
     return True
 
 
 def validate_output_safety(output_text: str, format_type: str = "") -> bool:
-    """
+    \"\"\"
     Validates generated output against PII leaks and harmful content.
     Returns True if safe, raises SecurityPolicyViolation if not.
-    """
+    \"\"\"
     if not output_text:
         return True # Empty is allowed
 
@@ -84,3 +84,7 @@ def validate_output_safety(output_text: str, format_type: str = "") -> bool:
         raise SecurityPolicyViolation("Output contains harmful content.")
 
     return True
+"""
+
+with open("agent-backend/liber_content_factory/security/guardrails.py", "w") as f:
+    f.write(new_content)

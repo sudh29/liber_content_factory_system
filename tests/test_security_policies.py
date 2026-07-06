@@ -6,12 +6,8 @@ input length limits, and output screening.
 """
 
 import pytest
-from src.security_policies import (
-    validate_input_safety,
-    validate_output_safety,
-    SecurityPolicyViolation,
-    MAX_INPUT_LENGTH,
-)
+from liber_content_factory.security.guardrails import validate_input_safety, validate_output_safety, SecurityPolicyViolation
+from liber_content_factory.config.constants import MAX_INPUT_LENGTH
 
 
 # --- Input Guardrail Tests ---

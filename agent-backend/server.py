@@ -7,7 +7,7 @@ liber_content_factory.api package.
 
 import logging
 import json
-from http.server import HTTPServer, BaseHTTPRequestHandler
+from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 from urllib.parse import urlparse
 
 # Configure structured logging
@@ -149,7 +149,7 @@ class QuoteAPIHandler(BaseHTTPRequestHandler):
 def run_server(port=8000):
     """Starts the HTTP server."""
     server_address = ('', port)
-    httpd = HTTPServer(server_address, QuoteAPIHandler)
+    httpd = ThreadingHTTPServer(server_address, QuoteAPIHandler)
     logger.info(f"Starting server on port {port}...")
     try:
         httpd.serve_forever()
