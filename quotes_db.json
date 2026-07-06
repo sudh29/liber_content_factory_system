@@ -54,5 +54,18 @@
     "type": "Quote",
     "status": "Unpublished",
     "source": "Letter to Charles Babbage (1843)"
+  },
+  {
+    "id": "q_1783334288314",
+    "text": "Be yourself; everyone else is already taken.",
+    "author": "Oscar Wilde",
+    "category": "Motivation",
+    "type": "Quote",
+    "status": "Published",
+    "source": "Attributed Wilde Anecdotes",
+    "publishedPlatforms": [
+      "telegram"
+    ],
+    "publishedTime": "2026-07-06T10:38:23.033950Z"
   }
 ]
