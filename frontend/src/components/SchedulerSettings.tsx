@@ -29,7 +29,7 @@ export const SchedulerSettings: React.FC<SchedulerSettingsProps> = ({
   onPublishNow,
   logs,
 }) => {
-  const [selectedQuoteId, setSelectedQuoteId] = useState("");
+  const [selectedQuoteId, setSelectedQuoteId] = useState(preSelectedQuoteId || "");
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>(['twitter', 'linkedin', 'telegram', 'instagram', 'whatsapp']);
   const [publishing, setPublishing] = useState(false);
   const [publishStatus, setPublishStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
@@ -121,13 +121,33 @@ export const SchedulerSettings: React.FC<SchedulerSettingsProps> = ({
         )}
 
         {preSelectedQuoteId && selectedQuote && (
-          <div className="p-3 bg-brand-terracotta/10 border-l-4 border-brand-terracotta rounded-r-xl text-xs space-y-1">
+          <div className="p-4 bg-brand-terracotta/10 border-l-4 border-brand-terracotta rounded-r-xl text-xs space-y-2.5">
             <span className="font-bold text-brand-navy dark:text-brand-cream flex items-center gap-1">
-              <CheckCircle2 className="w-3.5 h-3.5 text-brand-terracotta" /> Received From Generation Page:
+              <CheckCircle2 className="w-3.5 h-3.5 text-brand-terracotta" /> Content Ready to Publish
             </span>
-            <p className="text-[11px] italic text-brand-slate dark:text-brand-gold/80 leading-relaxed truncate">
-              [{selectedQuote.type}] "{selectedQuote.text}"
-            </p>
+            <div className="bg-white/60 dark:bg-brand-midnight/40 p-3 rounded-lg border border-brand-gold/15 dark:border-brand-slate/30 space-y-1.5">
+              <p className="text-[11px] italic text-brand-navy dark:text-brand-cream/90 leading-relaxed">
+                "{selectedQuote.text}"
+              </p>
+              <div className="flex flex-wrap gap-2 pt-1">
+                <span className="text-[9px] font-bold bg-brand-navy/10 dark:bg-brand-slate/30 text-brand-navy dark:text-brand-gold px-2 py-0.5 rounded-full">
+                  {selectedQuote.type || 'Quote'}
+                </span>
+                <span className="text-[9px] font-medium text-brand-slate dark:text-brand-gold/70">
+                  — {selectedQuote.author}
+                </span>
+                {selectedQuote.category && (
+                  <span className="text-[9px] font-medium bg-brand-terracotta/10 text-brand-terracotta px-2 py-0.5 rounded-full">
+                    {selectedQuote.category}
+                  </span>
+                )}
+                {selectedQuote.source && (
+                  <span className="text-[9px] text-brand-slate/70 dark:text-brand-slate">
+                    Source: {selectedQuote.source}
+                  </span>
+                )}
+              </div>
+            </div>
             <button
               type="button"
               onClick={() => {
@@ -155,7 +175,7 @@ export const SchedulerSettings: React.FC<SchedulerSettingsProps> = ({
               <option value="" className="text-brand-slate dark:text-brand-slate/80">-- Choose Content --</option>
               {unpublishedQuotes.map((q) => (
                 <option key={q.id} value={q.id}>
-                  [{q.type}] {q.title ? `"${q.title}"` : `"${q.text.substring(0, 36)}..."`} (— {q.author})
+                  [{q.type || 'Quote'}] {q.title ? `"${q.title}"` : `"${(q.text || '').substring(0, 36)}..."`} (— {q.author || 'Unknown'})
                 </option>
               ))}
             </select>

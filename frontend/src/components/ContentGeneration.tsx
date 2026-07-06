@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { ContentItem, ContentType } from '../types';
 import { Sparkles, Terminal, ShieldCheck, AlertTriangle, Eye, ArrowRight, Loader2, RefreshCcw, Layers, FileText, CheckCircle2, Calendar } from 'lucide-react';
 import { SocialPreview } from './SocialPreview';
+import { DEFAULT_QUOTES } from '../data/defaultContent';
 
 interface ContentGenerationProps {
   onAddQuote: (newQuote: Omit<ContentItem, 'id' | 'status'>) => boolean | Promise<boolean>;
@@ -28,7 +29,7 @@ export const ContentGeneration: React.FC<ContentGenerationProps> = ({
   const [activeStep, setActiveStep] = useState<number>(-1);
   const [pipelineSteps, setPipelineSteps] = useState<PipelineStep[]>([]);
   const [consoleLogs, setConsoleLogs] = useState<string[]>([]);
-  
+
   // Results panel state
   const [generatedItem, setGeneratedItem] = useState<ContentItem | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
@@ -83,9 +84,73 @@ export const ContentGeneration: React.FC<ContentGenerationProps> = ({
     ];
     setPipelineSteps(initialSteps);
 
+    // ── Sandbox Simulator: use local default data, no API call ──
+    if (simulateMode) {
+      addConsoleLog(`SANDBOX MODE: Running local simulation (no API call)...`);
+
+      try {
+        // Pick a random quote from the default pool
+        const pool = DEFAULT_QUOTES.filter((q) => q.status === 'Unpublished');
+        const picked = pool.length > 0
+          ? pool[Math.floor(Math.random() * pool.length)]
+          : DEFAULT_QUOTES[Math.floor(Math.random() * DEFAULT_QUOTES.length)];
+
+        // Simulate each pipeline step with a delay
+        const simulatedMessages = [
+          `Discovered ${Math.floor(Math.random() * 5) + 3} candidate items from local repository.`,
+          `No duplicates detected. All candidates are unique.`,
+          `Ranked candidates by engagement score. Top pick: "${picked.text.substring(0, 40)}..."`,
+          `Enriched with source: ${picked.source || 'N/A'}. Author verified: ${picked.author}.`,
+          `Content block synthesized successfully using local generator.`,
+          `Formatting validated. CTA and structure checks passed.`,
+          `Adapted for target channels: Instagram, Twitter, LinkedIn.`,
+          `Visual prompt generated. Color palette: warm earth tones.`,
+        ];
+
+        for (let i = 0; i < initialSteps.length; i++) {
+          // Mark step as STARTED
+          setPipelineSteps((prev) =>
+            prev.map((s, idx) => idx === i ? { ...s, status: 'STARTED', message: `Processing...` } : s)
+          );
+          addConsoleLog(`[${initialSteps[i].agent.toUpperCase()}] status: STARTED - Processing...`);
+          await new Promise((r) => setTimeout(r, 300 + Math.random() * 200));
+
+          // Mark step as COMPLETED
+          setPipelineSteps((prev) =>
+            prev.map((s, idx) => idx === i ? { ...s, status: 'COMPLETED', message: simulatedMessages[i] } : s)
+          );
+          addConsoleLog(`[${initialSteps[i].agent.toUpperCase()}] status: COMPLETED - ${simulatedMessages[i]}`);
+          await new Promise((r) => setTimeout(r, 150));
+        }
+
+        // Build the generated content item from the picked default quote
+        const newItem: ContentItem = {
+          id: `gen_${Date.now()}`,
+          type: contentType,
+          text: picked.text,
+          author: picked.author,
+          category: picked.category,
+          source: picked.source,
+          status: 'Unpublished',
+          engagement: undefined,
+        };
+
+        setGeneratedItem(newItem);
+        addConsoleLog(`SUCCESS: Sandbox simulation completed. Content ready for review!`);
+        setFormSuccess("Sandbox Generation Completed!");
+      } catch (err: any) {
+        addConsoleLog(`ERROR: Sandbox simulation failed: ${err.message}`);
+        setFormError(`Sandbox simulation error: ${err.message}`);
+      } finally {
+        setIsGenerating(false);
+      }
+      return;
+    }
+
+    // ── Live Pipeline: call the backend API ──
     try {
-      addConsoleLog(`Connecting to generation API (simulate: ${simulateMode})...`);
-      
+      addConsoleLog(`Connecting to generation API...`);
+
       const response = await fetch('/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -101,7 +166,7 @@ export const ContentGeneration: React.FC<ContentGenerationProps> = ({
       }
 
       const result = await response.json();
-      
+
       if (!result.success) {
         const stepsFromServer = result.steps || [];
         for (let i = 0; i < stepsFromServer.length; i++) {
@@ -141,10 +206,10 @@ export const ContentGeneration: React.FC<ContentGenerationProps> = ({
 
       // We animate the steps sequence based on the server result steps
       const stepsFromServer = result.steps || [];
-      
+
       for (let i = 0; i < stepsFromServer.length; i++) {
         const step = stepsFromServer[i];
-        
+
         // Match step name to our initialSteps
         setPipelineSteps((prevSteps) => {
           return prevSteps.map((s) => {
@@ -187,8 +252,8 @@ export const ContentGeneration: React.FC<ContentGenerationProps> = ({
       setFormSuccess("Generation Completed!");
     } catch (err: any) {
       addConsoleLog(`ERROR: Pipeline execution aborted due to critical error: ${err.message}`);
-      setFormError(`Generation failed: ${err.message}. Try switching to 'Local Agent Simulator' mode.`);
-      
+      setFormError(`Generation failed: ${err.message}. Try switching to 'Sandbox Simulator' mode.`);
+
       setPipelineSteps((prev) => {
         let marked = false;
         return prev.map((s) => {
@@ -204,11 +269,11 @@ export const ContentGeneration: React.FC<ContentGenerationProps> = ({
     }
   };
 
-  const handleQueueContent = () => {
+  const handleQueueContent = async () => {
     if (!generatedItem) return;
-    
+
     // Save to the quotes repository via props callbacks
-    const success = onAddQuote({
+    const success = await onAddQuote({
       type: generatedItem.type,
       title: generatedItem.title,
       text: generatedItem.text,
@@ -218,12 +283,12 @@ export const ContentGeneration: React.FC<ContentGenerationProps> = ({
     });
 
     if (success) {
-      setFormSuccess("Content queued for scheduling successfully!");
+      setFormSuccess("Content queued for publishing! Redirecting...");
       setSelectedQuote(generatedItem);
       // Navigate to Publishing & Scheduling
       setTimeout(() => {
         onNavigateToTab('schedule');
-      }, 1000);
+      }, 800);
     } else {
       setFormError("DEDUPLICATION SAFETY TRIGGERED: Identical content is already in your repository.");
     }
@@ -235,7 +300,7 @@ export const ContentGeneration: React.FC<ContentGenerationProps> = ({
 
   return (
     <div id="content-generation-page" className="max-w-4xl mx-auto space-y-6">
-      
+
       {/* Generator Controls */}
       <div className="bg-white dark:bg-brand-navy rounded-2xl border border-brand-gold/20 dark:border-brand-slate/40 p-6 shadow-xs transition-colors duration-200">
         <div className="flex items-center gap-2.5 mb-4 pb-3 border-b border-brand-gold/10">
@@ -335,7 +400,7 @@ export const ContentGeneration: React.FC<ContentGenerationProps> = ({
           <h4 className="text-xs font-bold uppercase tracking-wider text-brand-navy/80 dark:text-brand-gold mb-4 flex items-center gap-1.5">
             <Layers className="w-4 h-4 text-brand-terracotta" /> Agent Pipeline Status Tracker
           </h4>
-          
+
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {pipelineSteps.map((step) => {
               const getStatusStyle = (status: string) => {
@@ -418,31 +483,15 @@ export const ContentGeneration: React.FC<ContentGenerationProps> = ({
         <div className="space-y-4 animate-fadeIn">
           <SocialPreview quote={generatedItem} onEditQuoteText={handleEditContentText} />
 
-          <div className="bg-white dark:bg-brand-navy p-5 rounded-2xl border border-brand-gold/25 dark:border-brand-slate/40 flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div className="space-y-0.5">
-              <h4 className="text-xs font-bold text-brand-navy dark:text-brand-cream">Generative Draft Review</h4>
-              <p className="text-[10px] text-brand-slate dark:text-brand-gold/70">Verify formatting before sending to the active release schedule.</p>
-            </div>
-
-            <div className="flex gap-2">
-              <button
-                id="re-run-generation-btn"
-                onClick={handleGenerate}
-                className="px-4 py-2 border border-brand-gold/25 hover:border-brand-gold/40 text-brand-navy dark:text-brand-gold hover:bg-brand-cream dark:hover:bg-brand-midnight text-xs font-bold rounded-xl cursor-pointer transition-colors flex items-center gap-1.5"
-              >
-                <RefreshCcw className="w-3.5 h-3.5" />
-                <span>Re-Generate</span>
-              </button>
-
-              <button
-                id="queue-generation-btn"
-                onClick={handleQueueContent}
-                className="px-5 py-2 bg-brand-slate hover:bg-brand-slate text-white text-xs font-bold rounded-xl cursor-pointer transition-all flex items-center gap-1 shadow-sm active:scale-95"
-              >
-                <span>Queue Content</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </button>
-            </div>
+          <div className="bg-white dark:bg-brand-navy p-5 rounded-2xl border border-brand-gold/25 dark:border-brand-slate/40 flex justify-end">
+            <button
+              id="publish-navigation-btn"
+              onClick={handleQueueContent}
+              className="px-6 py-3 bg-brand-terracotta hover:bg-brand-terracotta/90 text-white text-xs font-bold rounded-xl cursor-pointer transition-all flex items-center gap-1.5 shadow-md active:scale-95"
+            >
+              <span>Publish</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
           </div>
         </div>
       )}

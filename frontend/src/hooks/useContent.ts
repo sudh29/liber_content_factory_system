@@ -61,8 +61,12 @@ export function useContent() {
   };
 
   const addQuote = async (newQuoteData: Omit<Quote, 'id' | 'status'>): Promise<{ success: boolean; isDuplicate: boolean; quote?: Quote }> => {
-    if (isDuplicateQuote(quotes, newQuoteData.text)) {
-      return { success: false, isDuplicate: true };
+    const normalizedNewText = newQuoteData.text.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const existing = quotes.find(
+      (q) => q.text.toLowerCase().replace(/[^a-z0-9]/g, '') === normalizedNewText
+    );
+    if (existing) {
+      return { success: true, isDuplicate: false, quote: existing };
     }
     const newQuote: Quote = {
       id: `q_${Date.now()}`,

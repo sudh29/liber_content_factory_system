@@ -22,7 +22,8 @@ export function usePublishingEngine(
     try {
       const res = await fetch('/api/logs');
       if (res.ok) {
-        const data = await res.json() as AuditLog[];
+        const payload = await res.json();
+        const data: AuditLog[] = Array.isArray(payload) ? payload : (Array.isArray(payload.logs) ? payload.logs : []);
         setLogsState(data);
         localStorage.setItem('quotes_audit_logs', JSON.stringify(data));
       } else {
@@ -93,7 +94,7 @@ export function usePublishingEngine(
         quoteId,
         platforms,
       };
-      const updated = [newLog, ...currentLogs];
+      const updated = [newLog, ...(Array.isArray(currentLogs) ? currentLogs : [])];
       localStorage.setItem('quotes_audit_logs', JSON.stringify(updated));
       return updated;
     });
@@ -129,7 +130,7 @@ export function usePublishingEngine(
       message: startMsg,
       quoteId
     };
-    setLogsState(prev => [tempStartLog, ...prev]);
+    setLogsState(prev => [tempStartLog, ...(Array.isArray(prev) ? prev : [])]);
 
     try {
       const res = await fetch('/api/publish', {
@@ -151,8 +152,9 @@ export function usePublishingEngine(
         setQuotes(updatedQuotes);
         
         if (result.logs) {
-          setLogsState(result.logs);
-          localStorage.setItem('quotes_audit_logs', JSON.stringify(result.logs));
+          const logsData = Array.isArray(result.logs) ? result.logs : [];
+          setLogsState(logsData);
+          localStorage.setItem('quotes_audit_logs', JSON.stringify(logsData));
         }
 
         if (onQuotePublished) {
@@ -170,7 +172,7 @@ export function usePublishingEngine(
         message: `Publish failed: ${err.message}`,
         quoteId
       };
-      setLogsState(prev => [failLog, ...prev]);
+      setLogsState(prev => [failLog, ...(Array.isArray(prev) ? prev : [])]);
       throw err;
     }
   };

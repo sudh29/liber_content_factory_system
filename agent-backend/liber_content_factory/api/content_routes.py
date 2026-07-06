@@ -59,14 +59,30 @@ def post_quote(handler: BaseHTTPRequestHandler, post_data: str) -> None:
             
         quotes = read_json_file(QUOTES_DB_FILE)
         
+        # Preserve all fields from frontend, only generate ID if not provided
         new_quote = {
-            "id": str(uuid.uuid4()),
+            "id": data.get('id', str(uuid.uuid4())),
             "text": data['text'],
             "author": data['author'],
-            "category": data.get('category', 'General')
+            "category": data.get('category', 'General'),
         }
+        # Preserve optional fields from frontend
+        for key in ['type', 'status', 'source', 'title', 'scheduledTime', 'scheduledPlatforms',
+                     'publishedTime', 'publishedPlatforms', 'engagement', 'errorMessage']:
+            if key in data:
+                new_quote[key] = data[key]
         
-        quotes.append(new_quote)
+        # Check if quote with same ID already exists (update instead of duplicate)
+        existing_idx = None
+        for i, q in enumerate(quotes):
+            if q.get('id') == new_quote['id']:
+                existing_idx = i
+                break
+        
+        if existing_idx is not None:
+            quotes[existing_idx] = new_quote
+        else:
+            quotes.append(new_quote)
         
         if write_json_file(QUOTES_DB_FILE, quotes):
             handler.send_response(201)
@@ -75,7 +91,7 @@ def post_quote(handler: BaseHTTPRequestHandler, post_data: str) -> None:
             handler.send_header('Access-Control-Allow-Headers', 'Content-Type, Authorization')
             handler.send_header('Content-type', 'application/json')
             handler.end_headers()
-            handler.wfile.write(json.dumps(new_quote).encode())
+            handler.wfile.write(json.dumps({"quote": new_quote}).encode())
         else:
             handler.send_response(500)
             handler.send_header('Access-Control-Allow-Origin', '*')
