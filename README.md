@@ -3,7 +3,7 @@
 
 **Capstone Submission — AI Agents: Intensive Vibe Coding (Google × Kaggle)**  
 **Repository:** [github.com/sudh29/liber_content_factory_system](https://github.com/sudh29/liber_content_factory_system)  
-**Video Walkthrough:** [youtu.be/iAzrd1AmMMg](https://youtu.be/iAzrd1AmMMg)
+**Video Walkthrough:** [https://www.youtube.com/watch?v=iAzrd1AmMMg](https://www.youtube.com/watch?v=iAzrd1AmMMg)
 
 ---
 

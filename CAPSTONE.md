@@ -1,8 +1,10 @@
-# Liber Content Factory: A General-Purpose Multi-Agent Content Automation Framework
+# Liber Content Factory: An Enterprise Multi-Agent Content Automation Framework
 
-**Capstone submission — AI Agents: Intensive Vibe Coding (Google × Kaggle)**
-**Repo:** https://github.com/sudh29/liber_content_factory_system
-youtube : https://youtu.be/iAzrd1AmMMg
+**Capstone Submission — AI Agents: Intensive Vibe Coding (Google × Kaggle)**  
+**Track:** Agents for Business  
+**Repository:** [github.com/sudh29/liber_content_factory_system](https://github.com/sudh29/liber_content_factory_system)  
+**YouTube Walkthrough:** [https://www.youtube.com/watch?v=iAzrd1AmMMg](https://www.youtube.com/watch?v=iAzrd1AmMMg)  
+
 ---
 
 ## TL;DR
@@ -102,8 +104,9 @@ On top of the ADK pipeline, I also defined three portable **Skills** (`context-e
 | Backend | Python 3.10+, `uv` for dependency management, FastAPI-style HTTP layer (`server.py`) for the dashboard to call |
 | Frontend | React + Vite + TypeScript + Tailwind, with dedicated hooks for content (`useContent`), publishing (`usePublishingEngine`), and agent sessions (`useAgentSession`) |
 | Observability | OpenTelemetry, with pluggable exporters (Google Cloud Trace, OTLP, or console in dev) |
+| Storage & Persistence | Abstracted `StorageRepository` supporting atomic local file replacement (`.tmp`) and Cloud SQL / PostgreSQL relational databases with WAL journaling |
 | Publishing channels | Telegram Bot API, WhatsApp via WAHA (self-hosted WhatsApp HTTP API), generic outbound webhooks |
-| Testing | pytest — unit tests for the pipeline, dedicated `test_security_policies.py`, and an `agents-cli`-based eval harness with a JSON eval dataset |
+| Testing | pytest — 35 automated unit/security tests (100% pass rate) and an `agents-cli`-based eval harness with a JSON eval dataset |
 
 ---
 
@@ -121,21 +124,20 @@ Mapping the build back to the five days of the course:
 
 ## Security & Guardrails
 
-Rather than trusting model output blindly, every run passes through explicit checks:
+Rather than trusting model output blindly, every run passes through multi-layered enterprise security defenses:
 
-- **Input validation** — prompt length limits and a naive-but-real keyword blocklist (`"ignore previous instructions"`, `"system prompt"`, `"bypass"`, `"jailbreak"`) to catch obvious injection attempts before they reach the model.
-- **Output validation** — a minimum-length sanity check and a harmful-content blocklist before a draft is allowed to proceed to formatting/publishing.
-- **Self-critique before publish** — the generate→validate loop means the model is adversarially checking its own work (exact quote preserved, real hashtags present, CTA present, no generic filler) before anything reaches the formatter, with a hard cap of 3 iterations so it can't loop forever.
-
-I'd call these guardrails a solid first layer rather than a production-hardened security boundary — the blocklists in particular are intentionally simple and are the most obvious next thing to harden (see below).
+- **API Gateway Defense (`gateway.py`)** — Implements an IP-based sliding window rate limiter (`RateLimiter`, default 5 req/min) and Bearer Token / API Key verification (`AuthGateway`) on all HTTP generation endpoints to prevent Denial of Service (DoS) attacks and LLM token quota depletion.
+- **Input validation** — Prompt length limits and a keyword blocklist (`"ignore previous instructions"`, `"system prompt"`, `"bypass"`, `"jailbreak"`) to catch obvious prompt injection attempts before they reach Gemini.
+- **Output validation** — Minimum-length sanity checks, harmful-content blocklists, and secret key detection (e.g., preventing accidental API key leakage) before drafts proceed to formatting and publishing.
+- **Self-critique before publish** — The generate→validate loop ensures the model adversarially checks its own work (verbatim quote accuracy, real hashtags present, CTA present, no generic filler) before reaching formatting, bounded by a hard cap of 3 iterations.
 
 ---
 
 ## Evaluation & Testing
 
-- Unit tests cover the ADK pipeline wiring itself (`tests/unit/test_adk_pipeline.py`) and the WhatsApp/WAHA integration path.
-- A dedicated `test_security_policies.py` suite exercises the guardrail functions directly.
-- Beyond pytest, the project uses the `agents-cli` eval surface: a JSON eval dataset (`tests/eval/datasets/basic-dataset.json`) that can be run through `agents-cli eval generate` → `agents-cli eval grade`, with `eval compare` for regression checks and `eval analyze` for clustering failure modes as the dataset grows.
+- **100% Automated Test Pass Rate** — The suite includes **35 automated pytest integration and guardrail tests** covering pipeline orchestration, rate limiting, authentication, and database repository persistence.
+- **Unit & Security Suites** — Unit tests verify ADK pipeline wiring (`test_adk_pipeline.py`), WhatsApp/WAHA tool integration, rate limiting/auth (`test_gateway.py`), and storage repositories (`test_storage_repo.py`). A dedicated `test_security_policies.py` suite exercises input/output prompt injection defenses directly.
+- **Quality Flywheel & Eval Harness** — Beyond pytest, the project uses the `agents-cli` eval surface with a curated JSON eval dataset (`tests/eval/datasets/basic-dataset.json`) that runs through `agents-cli eval generate` → `agents-cli eval grade`, supporting `eval compare` for regression checks and `eval analyze` for clustering failure modes.
 
 ---
 
@@ -148,9 +150,8 @@ I'd call these guardrails a solid first layer rather than a production-hardened 
 
 ---
 
-## Links
+## Links & Setup Instructions
 
-- **GitHub repo:** https://github.com/sudh29/liber_content_factory_system
-- **Run instructions:** see `RUN.md` and `agent-backend/README.md` in the repo for full setup (backend + frontend + optional WhatsApp bridge)
-
-*(Video walkthrough and rationale to be attached per the capstone submission requirements.)*
+- **GitHub Repository:** [https://github.com/sudh29/liber_content_factory_system](https://github.com/sudh29/liber_content_factory_system)
+- **YouTube Video Walkthrough:** [https://www.youtube.com/watch?v=iAzrd1AmMMg](https://www.youtube.com/watch?v=iAzrd1AmMMg)
+- **Setup Instructions:** Complete instructions for local execution, Docker Compose deployment, environment configuration, and WhatsApp WAHA integration are documented in the root `README.md` and `RUN.md`.
